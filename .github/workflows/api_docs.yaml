@@ -39,6 +39,10 @@ jobs:
       - name: Install Dependencies
         run: pip install -r requirements.txt
         shell: bash
+      - name: Create Directory
+        run: |
+            mkdir schema 
+            mkdir schema/build
 
       - name: Generate Schema File
         run: python manage.py spectacular --color --file schema/index.yaml
