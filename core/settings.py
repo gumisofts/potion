@@ -2,24 +2,24 @@ from pathlib import Path
 import os
 from dotenv import load_dotenv
 from datetime import timedelta
+from django.core.management.utils import get_random_secret_key
 
-load_dotenv("config/app.env")
-load_dotenv("config/.env")
+load_dotenv(".env", override=True)
+load_dotenv(".production.env", override=True)
+
+
 env = os.getenv
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = env("SECRET_KEY")
+SECRET_KEY = env("SECRET_KEY", get_random_secret_key())
 DEBUG = env("DEBUG", False) == "True"
 
-ALLOWED_HOSTS = [
-    "localhost",
-]
-
+ALLOWED_HOSTS = env("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
 
 # Application definition
 
-CORS_ALLOWED_ORIGINS = ["http://localhost:3000"]
-CORS_ALLOW_CREDENTIALS = True 
+CORS_ALLOWED_ORIGINS = env("CORS_ALLOWED_ORIGINS", "http://localhost:3000").split(",")
+CORS_ALLOW_CREDENTIALS = True
 
 AUTH_USER_MODEL = "accounts.User"
 INSTALLED_APPS = [
@@ -30,14 +30,12 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-
-    'rest_framework',
-    'rest_framework_simplejwt',
-    # 'rest_framework_simplejwt.token_blacklist',
-
-    'accounts',
-    'wallets',
-    'subscriptions',
+    "rest_framework",
+    "rest_framework_simplejwt",
+    "drf_spectacular",
+    "accounts",
+    "wallets",
+    "subscriptions",
 ]
 
 MIDDLEWARE = [
@@ -76,20 +74,16 @@ ASGI_APPLICATION = "core.asgi.app"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
-    "dev": {
+    "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": env("POSTGRES_DB", "dev"),
-        "USER": env("POSTGRES_USER", "dev"),
-        "PASSWORD": env("POSTGRES_PASSWORD", "developer@123"),
-        "HOST": env("POSTGRES_HOST", "localhost"),
-        "PORT": env("POSTGRES_PORT", "5432"),
+        "NAME": env("PG_DB"),
+        "USER": env("PG_USER"),
+        "PASSWORD": env("PG_PASSWORD"),
+        "HOST": env("PG_HOST"),
+        "PORT": env("PG_PORT", "5432"),
         "CONN_MAX_AGE": None,
         "OPTIONS": {"sslmode": env("POSTGRES_SSL_MODE")},
-    },
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    },
+    }
 }
 
 
