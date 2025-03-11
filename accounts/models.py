@@ -1,16 +1,15 @@
-
-from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
-from django.utils.translation import gettext_lazy as _
 from django.core.validators import (
-    RegexValidator,
     EmailValidator,
-    FileExtensionValidator
+    FileExtensionValidator,
+    RegexValidator,
 )
+from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 phone_validator = RegexValidator(
     regex=r"^(7|9)\d{8}$",
-    message="Phone number must be 8-12 digits (e.g., +251945678903)."
+    message="Phone number must be 8-12 digits (e.g., +251945678903).",
 )
 
 
@@ -19,11 +18,11 @@ class User(AbstractUser):
         return filename
 
     wallet = models.OneToOneField(
-        'wallets.Wallet', 
-        on_delete=models.SET_NULL, 
-        null=True, 
-        blank=True, 
-        related_name='user_wallet'
+        "wallets.Wallet",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="user_wallet",
     )
     profile_pic = models.ImageField(
         upload_to=upload_to,
@@ -46,39 +45,39 @@ class User(AbstractUser):
         validators=[phone_validator],
     )
     is_verified = models.BooleanField(default=False)
-    
+
     USERNAME_FIELD = "phone_number"
 
     # REQUIRED_FIELDS = ["first_name"]
-    REQUIRED_FIELDS = ['username']
+    REQUIRED_FIELDS = ["username"]
 
     def __str__(self):
         return self.phone_number
 
+
 class Business(models.Model):
-    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='businesses')
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="businesses")
     wallet = models.ForeignKey(
-        'wallets.Wallet', 
-        on_delete=models.SET_NULL, 
-        null=True, 
-        blank=True, 
-        related_name='business_wallets'
+        "wallets.Wallet",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="business_wallets",
     )
     name = models.CharField(max_length=255)
     contact_phone = models.CharField(
-        max_length=255, 
-        null=True, 
-        blank=True,
-        validators=[phone_validator]
+        max_length=255, null=True, blank=True, validators=[phone_validator]
     )
-    contact_email = models.EmailField(validators=[EmailValidator(message="Invalid email format.")])
+    contact_email = models.EmailField(
+        validators=[EmailValidator(message="Invalid email format.")]
+    )
     license = models.CharField(max_length=255)
     is_active = models.BooleanField(default=True)
     is_verified = models.BooleanField(default=False)
     trust_level = models.CharField(
-        max_length=10, 
-        choices=[('low', 'Low'), ('medium', 'Medium'), ('high', 'High')], 
-        default='medium'
+        max_length=10,
+        choices=[("low", "Low"), ("medium", "Medium"), ("high", "High")],
+        default="medium",
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -86,12 +85,14 @@ class Business(models.Model):
     def __str__(self):
         return self.name
 
+
 class Service(models.Model):
-    business = models.ForeignKey(Business, on_delete=models.CASCADE, related_name='services')
+    business = models.ForeignKey(
+        Business, on_delete=models.CASCADE, related_name="services"
+    )
     name = models.CharField(max_length=255)
     service_type = models.CharField(
-        max_length=20, 
-        choices=[('basic', 'Basic'), ('premium', 'Premium')]
+        max_length=20, choices=[("basic", "Basic"), ("premium", "Premium")]
     )
     is_active = models.BooleanField(default=True)
 

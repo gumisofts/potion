@@ -1,5 +1,5 @@
-
 from django.contrib import admin
+
 from .models import Subscription, UserSubscription
 
 admin.site.register(Subscription)

@@ -1,6 +1,6 @@
-
 from django.contrib import admin
-from .models import User, Business, Service
+
+from .models import Business, Service, User
 
 admin.site.register(User)
 admin.site.register(Business)
