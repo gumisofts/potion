@@ -1,19 +1,14 @@
+from uuid import uuid4
+
 from django.core.validators import MinValueValidator
 from django.db import models, transaction
 
 from accounts.models import User
 
-# from django.core.exceptions import ValidationError
-
 
 class Wallet(models.Model):
-    user = models.OneToOneField(
-        User,
-        on_delete=models.CASCADE,
-        null=True,
-        blank=True,
-        related_name="wallet_owner",
-    )
+    id = models.UUIDField(primary_key=True, default=uuid4)
+    user_id = models.UUIDField()
     balance = models.BigIntegerField(
         default=0,
         validators=[MinValueValidator(0, message="Balance cannot be negative.")],
@@ -47,6 +42,7 @@ class Wallet(models.Model):
 
 
 class Transaction(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid4)
     wallet = models.ForeignKey(
         Wallet, on_delete=models.CASCADE, related_name="transactions"
     )
