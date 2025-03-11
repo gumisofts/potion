@@ -8,7 +8,7 @@ from accounts.models import User
 
 class Wallet(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid4)
-    user_id = models.UUIDField()
+    user = models.OneToOneField("accounts.User", on_delete=models.PROTECT)
     balance = models.BigIntegerField(
         default=0,
         validators=[MinValueValidator(0, message="Balance cannot be negative.")],

@@ -18,10 +18,6 @@ phone_validator = RegexValidator(
 class User(AbstractUser):
     id = models.UUIDField(primary_key=True, default=uuid4)
     username = None
-
-    def upload_to(self, filename):
-        return filename
-
     profile_pic_id = models.UUIDField(null=True, blank=True)
     phone_number = models.CharField(
         max_length=255,
@@ -29,6 +25,10 @@ class User(AbstractUser):
         validators=[phone_validator],
     )
     is_verified = models.BooleanField(default=False)
+
+    user_type = models.CharField(
+        max_length=255, choices=(("user", "user"), ("busines", "bussines"))
+    )
 
     USERNAME_FIELD = "phone_number"
 
@@ -38,8 +38,11 @@ class User(AbstractUser):
 
 class Business(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid4)
+    logo_id = models.UUIDField(null=True, blank=True)
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="businesses")
-    wallet_id = models.UUIDField()
+    wallet = models.OneToOneField(
+        "wallets.Wallet", on_delete=models.CASCADE, related_name="business"
+    )
     name = models.CharField(max_length=255)
     contact_phone = models.CharField(
         max_length=255, null=True, blank=True, validators=[phone_validator]
