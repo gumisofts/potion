@@ -45,6 +45,7 @@ class User(AbstractUser):
         validators=[phone_validator],
     )
     is_verified = models.BooleanField(default=False)
+    is_email_confirmed = models.BooleanField(default=False)
 
     USERNAME_FIELD = "phone_number"
 
@@ -53,6 +54,10 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.phone_number
+    
+class EmailConfirmationToken(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
 
 class Business(models.Model):

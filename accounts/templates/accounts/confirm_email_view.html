@@ -1,0 +1,14 @@
+
+{% block main %}
+
+{% if is_email_confirmed == True %}
+<div class="notification is-success">
+    <p>Your Email is confirmed</p>
+</div>
+{% else %}
+<div class="notification is-danger">
+    <p>Your confirmation token is expired.Please request new one</p>
+</div>
+{% endif %}
+
+{% endblock main %}
