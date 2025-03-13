@@ -10,6 +10,7 @@ from .models import User, EmailConfirmationToken
 from .serializers import CustomTokenObtainPairSerializer, RegisterSerializer
 from .utils import send_confirmation_email
 
+
 class Home(APIView):
     authentication_classes = [JWTAuthentication]
 
@@ -65,6 +66,7 @@ class RegisterView(CreateAPIView):
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class UserInformationAPIView(APIView):
     authentication_classes = [JWTAuthentication]
 
@@ -72,13 +74,14 @@ class UserInformationAPIView(APIView):
         try:
             user: User = request.user
             payload = {
-                'email': user.email, 
-                'is_email_confirmed': user.is_email_confirmed
+                "email": user.email,
+                "is_email_confirmed": user.is_email_confirmed,
             }
             return Response(data=payload, status=200)
         except Exception as e:
             return Response({"error": str(e)}, status=401)
-    
+
+
 class SendEmailConfirmationTokenAPIView(APIView):
     authentication_classes = [JWTAuthentication]
 
@@ -86,25 +89,28 @@ class SendEmailConfirmationTokenAPIView(APIView):
         try:
             user: User = request.user
             token = EmailConfirmationToken.objects.create(user=user)
-            send_confirmation_email(email=user.email, token_id=token.pk, user_id=user.pk)
+            send_confirmation_email(
+                email=user.email, token_id=token.pk, user_id=user.pk
+            )
             return Response(data=None, status=201)
         except Exception as e:
-            return Response({'error': str(e)}, status=401)
+            return Response({"error": str(e)}, status=401)
+
 
 def confirm_email_view(request):
-    token_id = request.GET.get('token_id', None)
-    user_id = request.GET.get('user_id', None)
+    token_id = request.GET.get("token_id", None)
+    user_id = request.GET.get("user_id", None)
     try:
         token = EmailConfirmationToken.objects.get(pk=token_id)
         user = token.user
         user.is_email_confirmed = True
         user.save()
-        data = {
-            'is_email_confirmed': True
-        }
-        return render(request, template_name='accounts/confirm_email_view.html', context=data)
+        data = {"is_email_confirmed": True}
+        return render(
+            request, template_name="accounts/confirm_email_view.html", context=data
+        )
     except EmailConfirmationToken.DoesNotExist:
-        data = {
-            'is_email_confirmed': False
-        }
-        return render(request, template_name='accounts/confirm_email_view.html', context=data)
+        data = {"is_email_confirmed": False}
+        return render(
+            request, template_name="accounts/confirm_email_view.html", context=data
+        )
