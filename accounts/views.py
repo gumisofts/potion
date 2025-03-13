@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 
-from .models import User, EmailConfirmationToken
+from .models import EmailConfirmationToken, User
 from .serializers import CustomTokenObtainPairSerializer, RegisterSerializer
 from .utils import send_confirmation_email
 

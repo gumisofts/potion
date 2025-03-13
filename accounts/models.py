@@ -1,9 +1,6 @@
 from django.contrib.auth.models import AbstractUser, BaseUserManager
-from django.core.validators import (
-    EmailValidator,
-    FileExtensionValidator,
-    RegexValidator,
-)
+from django.core.validators import (EmailValidator, FileExtensionValidator,
+                                    RegexValidator)
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 

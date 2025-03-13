@@ -3,13 +3,8 @@ from django.urls import path
 from rest_framework.routers import DefaultRouter
 
 from .consumers import *
-from .views import (
-    Home,
-    RegisterView,
-    SendEmailConfirmationTokenAPIView,
-    UserInformationAPIView,
-    confirm_email_view,
-)
+from .views import (Home, RegisterView, SendEmailConfirmationTokenAPIView,
+                    UserInformationAPIView, confirm_email_view)
 
 router = DefaultRouter()
 # Register Viewsets here
