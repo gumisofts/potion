@@ -12,12 +12,12 @@ class UsersAPIViewsTests(APITestCase):
     def test_user_information_api_view_requires_authentication(self):
         url = reverse("users:user_information_api_view")
         response = self.client.get(url)
-        self.assertEquals(response.status_code, 401)
+        self.assertEqual(response.status_code, 401)
 
     def test_send_email_confirmation_api_view_requires_authentication(self):
         url = reverse("users:send_email_confirmation_api_view")
         response = self.client.post(url)
-        self.assertEquals(response.status_code, 401)
+        self.assertEqual(response.status_code, 401)
 
     def test_send_email_confirmation_api_creates_token(self):
         user = User.objects.create_user(
@@ -31,6 +31,6 @@ class UsersAPIViewsTests(APITestCase):
         url = reverse("users:send_email_confirmation_api_view")
         self.client.force_authenticate(user=user)
         response = self.client.post(url)
-        self.assertEquals(response.status_code, 201)
+        self.assertEqual(response.status_code, 201)
         token = EmailConfirmationToken.objects.filter(user=user).first()
         self.assertIsNotNone(token)
