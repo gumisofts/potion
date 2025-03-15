@@ -1,16 +1,14 @@
-from django.db import models
+from uuid import uuid4
 
-from accounts.models import Service, User
+from django.db import models
 
 
 class Subscription(models.Model):
-    service = models.ForeignKey(
-        Service, on_delete=models.CASCADE, related_name="subscriptions"
-    )
-    refund_subscription = models.ForeignKey(
-        "self", on_delete=models.SET_NULL, null=True, blank=True
-    )
+    id = models.UUIDField(primary_key=True, default=uuid4)
     name = models.CharField(max_length=255)
+    service = models.ForeignKey(
+        "accounts.User", on_delete=models.CASCADE, related_name="subscriptions"
+    )
     frequency = models.BigIntegerField()
     fixed_price = models.BigIntegerField(null=True, blank=True)
     has_fixed_price = models.BooleanField(default=False)
@@ -20,10 +18,8 @@ class Subscription(models.Model):
 
 
 class UserSubscription(models.Model):
-    user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="subscriptions"
-    )
-    subscription = models.ForeignKey(Subscription, on_delete=models.CASCADE)
+    user = models.OneToOneField("accounts.User", on_delete=models.CASCADE)
+    subscription = models.OneToOneField(Subscription, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

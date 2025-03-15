@@ -1,3 +1,5 @@
+from uuid import uuid4
+
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.core.validators import (
     EmailValidator,
@@ -14,31 +16,9 @@ phone_validator = RegexValidator(
 
 
 class User(AbstractUser):
-    def upload_to(self, filename):
-        return filename
-
-    wallet = models.OneToOneField(
-        "wallets.Wallet",
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name="user_wallet",
-    )
-    profile_pic = models.ImageField(
-        upload_to=upload_to,
-        null=True,
-        blank=True,
-        validators=[
-            FileExtensionValidator(
-                [
-                    "jpg",
-                    "png",
-                    "jpeg",
-                    "heic",
-                ]
-            )
-        ],
-    )
+    id = models.UUIDField(primary_key=True, default=uuid4)
+    username = None
+    profile_pic_id = models.UUIDField(null=True, blank=True)
     phone_number = models.CharField(
         max_length=255,
         unique=True,
@@ -47,10 +27,11 @@ class User(AbstractUser):
     is_verified = models.BooleanField(default=False)
     is_email_confirmed = models.BooleanField(default=False)
 
-    USERNAME_FIELD = "phone_number"
+    user_type = models.CharField(
+        max_length=255, choices=(("user", "user"), ("busines", "bussines"))
+    )
 
-    # REQUIRED_FIELDS = ["first_name"]
-    REQUIRED_FIELDS = ["username"]
+    USERNAME_FIELD = "phone_number"
 
     def __str__(self):
         return self.phone_number
@@ -62,13 +43,11 @@ class EmailConfirmationToken(models.Model):
 
 
 class Business(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid4)
+    logo_id = models.UUIDField(null=True, blank=True)
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="businesses")
-    wallet = models.ForeignKey(
-        "wallets.Wallet",
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name="business_wallets",
+    wallet = models.OneToOneField(
+        "wallets.Wallet", on_delete=models.CASCADE, related_name="business"
     )
     name = models.CharField(max_length=255)
     contact_phone = models.CharField(
@@ -83,7 +62,7 @@ class Business(models.Model):
     trust_level = models.CharField(
         max_length=10,
         choices=[("low", "Low"), ("medium", "Medium"), ("high", "High")],
-        default="medium",
+        default="low",
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -93,6 +72,7 @@ class Business(models.Model):
 
 
 class Service(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid4)
     business = models.ForeignKey(
         Business, on_delete=models.CASCADE, related_name="services"
     )
