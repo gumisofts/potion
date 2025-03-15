@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework_simplejwt",
     "drf_spectacular",
+    "files",
     "accounts",
     "wallets",
     "subscriptions",
@@ -54,7 +55,7 @@ ROOT_URLCONF = "core.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": ["notifications/templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -143,8 +144,8 @@ EMAIL_USE_SSL = True
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = env("EMAIL_HOST")
 EMAIL_PORT = env("EMAIL_PORT")
-EMAIL_HOST_USER = env("EMAIL_HOST_USER")
-EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
+EMAIL_USER = env("EMAIL_USER")
+EMAIL_HOST_PASSWORD = env("EMAIL_USER_PASSWORD")
 
 ADMIN = ("Murad", "nuradhussen082@gmail.com")
 
