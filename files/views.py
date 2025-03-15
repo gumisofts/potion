@@ -11,12 +11,13 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ViewSet
 
-from .models import FileModel
-from .serializers import FileDownloadSerializer, FileUploadSerializer
 from files.spectacular_schema import (
     file_download_schema,
     file_upload_schema,
 )
+
+from .models import FileModel
+from .serializers import FileDownloadSerializer, FileUploadSerializer
 
 
 class GenerateSignedUrlView(APIView):
