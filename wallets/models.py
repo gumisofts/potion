@@ -3,12 +3,15 @@ from uuid import uuid4
 from django.core.validators import MinValueValidator
 from django.db import models, transaction
 
-from accounts.models import User
+from accounts.models import User, Business
 
 
 class Wallet(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid4)
-    user = models.OneToOneField("accounts.User", on_delete=models.PROTECT)
+    user = models.OneToOneField(User, on_delete=models.PROTECT)
+    business = models.OneToOneField(
+        Business, on_delete=models.PROTECT, null=True, blank=True
+    )
     balance = models.BigIntegerField(
         default=0,
         validators=[MinValueValidator(0, message="Balance cannot be negative.")],
