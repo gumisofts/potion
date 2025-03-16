@@ -1,0 +1,47 @@
+name: Deploy dev on lambda
+
+on:
+  push:
+    branches:
+      - dev-v01      
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: Development
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.12"
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Copy Environment Variables and Secrets
+        run: | 
+          echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
+          echo "PG_DB_NAME=${{ vars.PG_DB_NAME }}" >> .env
+          echo "PG_USER=${{ vars.PG_USER }}" >> .env
+          echo "PG_PASSWORD=${{ secrets.PG_PASSWORD }}" >> .env
+          echo "PG_HOST=${{ vars.PG_HOST }}" >> .env
+          echo "PG_PORT=${{ vars.PG_PORT }}" >> .env
+          echo "REDIS_HOST=${{ vars.REDIS_HOST }}" >> .env
+          echo "REDIS_PORT=${{ vars.REDIS_PORT }}" >> .env
+          echo "EMAIL_HOST=${{ vars.EMAIL_HOST }}" >> .env
+          echo "EMAIL_PORT=${{ vars.EMAIL_PORT }}" >> .env
+          echo "EMAIL_HOST_USER=${{ vars.EMAIL_HOST_USER }}" >> .env
+          echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> .env
+          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> .env
+          echo "AWS_DEFAULT_REGION=${{secrets.AWS_S3_REGION_NAME}}" >> .env
+          echo "AWS_STORAGE_BUCKET_NAME=${{vars.AWS_STORAGE_BUCKET_NAME}}" >> .env
+      
+      - name: Deploy with Zappa
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{vars.AWS_S3_REGION_NAME}}
+        run: |
+          zappa deploy dev || zappa update dev

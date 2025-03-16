@@ -40,9 +40,6 @@ class Business(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid4)
     logo_id = models.UUIDField(null=True, blank=True)
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="businesses")
-    wallet = models.OneToOneField(
-        "wallets.Wallet", on_delete=models.CASCADE, related_name="business"
-    )
     name = models.CharField(max_length=255)
     contact_phone = models.CharField(
         max_length=255, null=True, blank=True, validators=[phone_validator]

@@ -34,6 +34,8 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework_simplejwt",
     "drf_spectacular",
+    "drf_spectacular_sidecar",
+    "files",
     "accounts",
     "wallets",
     "subscriptions",
@@ -54,7 +56,7 @@ ROOT_URLCONF = "core.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": ["notifications/templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -143,8 +145,13 @@ EMAIL_USE_SSL = True
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = env("EMAIL_HOST")
 EMAIL_PORT = env("EMAIL_PORT")
-EMAIL_HOST_USER = env("EMAIL_HOST_USER")
-EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
+EMAIL_USER = env("EMAIL_USER")
+EMAIL_HOST_PASSWORD = env("EMAIL_USER_PASSWORD")
+
+AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY")
+AWS_STORAGE_BUCKET_NAME = env("AWS_STORAGE_BUCKET_NAME")
+AWS_S3_REGION_NAME = env("AWS_S3_REGION_NAME", "eu-north-1")
 
 ADMIN = ("Murad", "nuradhussen082@gmail.com")
 
