@@ -3,7 +3,7 @@ from uuid import uuid4
 from django.core.validators import MinValueValidator
 from django.db import models, transaction
 
-from accounts.models import User, Business
+from accounts.models import Business, User
 
 
 class Wallet(models.Model):
