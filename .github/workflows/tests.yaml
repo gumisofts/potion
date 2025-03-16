@@ -7,7 +7,6 @@ on:
     branches: ["main", "dev-v01", "v01"]
 
 env:
-  environment: Development
   SECRET_KEY: y)tb02r69qx3&qpw(!tgp800x)3l(q+(!fm$yv%gxwy0o_npd7
   PG_DB_NAME: temp_db
   PG_PASSWORD: temp_password
@@ -23,6 +22,7 @@ jobs:
   test:
     name: Run Django Tests
     runs-on: ubuntu-latest
+    environment: Development
     services:
       pg:
         image: postgres:alpine
