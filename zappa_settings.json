@@ -12,6 +12,6 @@
         "profile_name": "default",
         "project_name": "potion",
         "runtime": "python3.12",
-        "s3_bucket": "zappa-ic63u96ly"
+        "s3_bucket": "zappa-deploy-dev-v01"
     }
 }
