@@ -25,6 +25,7 @@ class User(AbstractUser):
         validators=[phone_validator],
     )
     is_verified = models.BooleanField(default=False)
+    is_email_confirmed = models.BooleanField(default=False)
 
     user_type = models.CharField(
         max_length=255, choices=(("user", "user"), ("busines", "bussines"))
@@ -34,6 +35,11 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.phone_number
+
+
+class EmailConfirmationToken(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
 
 class Business(models.Model):

@@ -1,7 +1,5 @@
 from django.contrib.auth.password_validation import validate_password
-from django.core.validators import (
-    RegexValidator,
-)
+from django.core.validators import RegexValidator
 from rest_framework import exceptions, serializers, validators
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
