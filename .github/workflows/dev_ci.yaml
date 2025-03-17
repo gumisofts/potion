@@ -38,11 +38,13 @@ jobs:
           echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> .env
           echo "AWS_DEFAULT_REGION=${{secrets.AWS_S3_REGION_NAME}}" >> .env
           echo "AWS_STORAGE_BUCKET_NAME=${{vars.AWS_STORAGE_BUCKET_NAME}}" >> .env
+      - name: Copy AWS Credentials
+        run: | 
+            mkdir .aws
+            echo "[default]" > .aws/credentials
+            echo "aws_access_key_id = ${{ secrets.AWS_ACCESS_KEY_ID }}" > .aws/credentials
+            echo "aws_secret_access_key = ${{ secrets.AWS_SECRET_ACCESS_KEY }}" > .aws/credentials
+            echo "region = ${{ secrets.AWS_S3_REGION_NAME }}" > .aws/credentials
       
       - name: Deploy with Zappa
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: ${{vars.AWS_S3_REGION_NAME}}
-        run: |
-          zappa deploy dev || zappa update dev
+        run: zappa deploy dev || zappa update dev
