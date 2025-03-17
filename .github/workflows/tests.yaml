@@ -22,7 +22,6 @@ jobs:
   test:
     name: Run Django Tests
     runs-on: ubuntu-latest
-    environment: Test
     services:
       pg:
         image: postgres:alpine
@@ -50,6 +49,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Copy Environment Variables and Secrets
+        environment: Test
         run: | 
           echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> .env
           echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> .env
