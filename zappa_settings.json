@@ -9,7 +9,7 @@
             "s3transfer",
             "concurrent"
         ],
-        "profile_name": "default",
+        "profile_name": "potion",
         "project_name": "potion",
         "runtime": "python3.12",
         "s3_bucket": "zappa-deploy-dev-v01"
