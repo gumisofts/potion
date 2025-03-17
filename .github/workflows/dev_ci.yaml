@@ -51,4 +51,6 @@ jobs:
             echo "region = ${{ secrets.AWS_S3_REGION_NAME }}" >> credentials
       
       - name: Deploy with Zappa
-        run: zappa deploy dev || zappa update dev
+        run: |
+          source env/bin/activate
+          zappa deploy dev || zappa update dev
