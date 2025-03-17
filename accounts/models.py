@@ -11,13 +11,57 @@ from django.utils.translation import gettext_lazy as _
 
 phone_validator = RegexValidator(
     regex=r"^(7|9)\d{8}$",
-    message="Phone number must be 8-12 digits (e.g., +251945678903).",
+    message="Phone number must be 8-12 digits (e.g., 945678903).",
 )
 
 
+class UserManager(BaseUserManager):
+    def create(
+        self,
+        phone_number,
+        first_name,
+        last_name=None,
+        is_active=True,
+        is_superuser=False,
+        is_staff=False,
+        **kwargs,
+    ):
+        user = self.model(
+            phone_number=phone_number,
+            first_name=first_name,
+            last_name=last_name,
+            is_active=is_active,
+            is_superuser=is_superuser,
+            is_staff=is_staff,
+            **kwargs,
+        )
+
+        user.save()
+
+        return user
+
+    def create_superuser(
+        self,
+        phone_number,
+        first_name,
+        last_name=None,
+        is_active=True,
+        **kwargs,
+    ):
+        return self.create(
+            phone_number=phone_number,
+            first_name=first_name,
+            last_name=last_name,
+            is_active=is_active,
+            is_superuser=True,
+            is_staff=True,
+            **kwargs,
+        )
+
+
 class User(AbstractUser):
-    id = models.UUIDField(primary_key=True, default=uuid4)
     username = None
+    id = models.UUIDField(primary_key=True, default=uuid4)
     profile_pic_id = models.UUIDField(null=True, blank=True)
     phone_number = models.CharField(
         max_length=255,
@@ -27,11 +71,16 @@ class User(AbstractUser):
     is_verified = models.BooleanField(default=False)
     is_email_confirmed = models.BooleanField(default=False)
 
+    last_name = models.CharField(_("last name"), max_length=150, blank=True, null=True)
+
     user_type = models.CharField(
         max_length=255, choices=(("user", "user"), ("busines", "bussines"))
     )
 
     USERNAME_FIELD = "phone_number"
+    REQUIRED_FIELDS = ["first_name"]
+
+    objects = UserManager()
 
     def __str__(self):
         return self.phone_number

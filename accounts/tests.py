@@ -23,7 +23,7 @@ class UsersAPIViewsTests(APITestCase):
         user = User.objects.create_user(
             first_name="new",
             last_name="user2",
-            username="newuser2",
+            username=None,
             password="admin123j",
             email="newuser2@example.com",
             phone_number="911223346",
