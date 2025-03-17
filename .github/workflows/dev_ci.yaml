@@ -21,8 +21,7 @@ jobs:
           python3 -m venv env
           source env/bin/activate
           python -m pip install --upgrade pip
-          pip install --upgrade setuptools
-          pip install zappa
+          pip install -r requirements.txt
       - name: Copy Environment Variables and Secrets
         run: | 
           echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
