@@ -20,10 +20,9 @@ class UsersAPIViewsTests(APITestCase):
         self.assertEqual(response.status_code, 401)
 
     def test_send_email_confirmation_api_creates_token(self):
-        user = User.objects.create_user(
+        user = User.objects.create(
             first_name="new",
             last_name="user2",
-            username=None,
             password="admin123j",
             email="newuser2@example.com",
             phone_number="911223346",

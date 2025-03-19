@@ -39,6 +39,8 @@ jobs:
           echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> .env
           echo "AWS_DEFAULT_REGION=${{secrets.AWS_S3_REGION_NAME}}" >> .env
           echo "AWS_STORAGE_BUCKET_NAME=${{vars.AWS_STORAGE_BUCKET_NAME}}" >> .env
+          echo "STATIC_URL=${{vars.STATIC_URL}}" >> .env
+          echo "ALLOWED_HOSTS=${{vars.ALLOWED_HOSTS}}" >> .env
       - name: Copy AWS Credentials
         run: | 
             cd ~/
