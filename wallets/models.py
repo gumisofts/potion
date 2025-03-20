@@ -43,6 +43,9 @@ class Wallet(models.Model):
 
         wallet.save()
 
+    def __str__(self):
+        return f"Wallet({self.user})"
+
 
 class Transaction(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid4)

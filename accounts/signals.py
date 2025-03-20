@@ -2,10 +2,12 @@ import logging
 
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
+from .dispatch import *
 
 from wallets.models import Wallet
-
-from .models import Business, User
+from datetime import datetime, timedelta
+from .models import Business, User, TemporaryCode, VerificationCode
+from core.utils import *
 
 logger = logging.getLogger(__name__)
 
@@ -27,3 +29,30 @@ def create_business_wallet(sender, instance, created, **kwargs):
         logger.info(f"Wallet created for business: {instance.name}")
     else:
         logger.info(f"Signal received for business update: {instance.name}")
+
+
+@receiver(user_registered, sender=User)
+def upon_registration(sender, instance, method, **kwargs):
+
+    print("Generating Verification Codes...")
+    print(kwargs)
+
+    code = str(generate_secure_six_digits())
+
+    if method == "EMAIL":
+
+        VerificationCode.objects.create(
+            user=instance,
+            token=code,
+            expires_at=datetime.now() + timedelta(minutes=5),
+            code_type=2,
+        )
+
+    else:
+        VerificationCode.objects.create(
+            user=instance,
+            token=code,
+            expires_at=datetime.now() + timedelta(minutes=5),
+            code_type=1,
+        )
+        TemporaryCode.objects.create(code=code, phone_number=instance.phone_number)

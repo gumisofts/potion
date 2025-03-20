@@ -10,7 +10,7 @@ User = get_user_model()
 class UsersAPIViewsTests(APITestCase):
 
     def test_user_information_api_view_requires_authentication(self):
-        url = reverse("users:user_information_api_view")
+        url = reverse("users-list")
         response = self.client.get(url)
         self.assertEqual(response.status_code, 401)
 

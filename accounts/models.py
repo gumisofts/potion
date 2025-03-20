@@ -8,6 +8,9 @@ from django.core.validators import (
 )
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from django.db.models import Manager
+
+from core.utils import hash256
 
 phone_validator = RegexValidator(
     regex=r"^(7|9)\d{8}$",
@@ -48,7 +51,7 @@ class UserManager(BaseUserManager):
         is_active=True,
         **kwargs,
     ):
-        return self.create(
+        user = self.create(
             phone_number=phone_number,
             first_name=first_name,
             last_name=last_name,
@@ -57,6 +60,12 @@ class UserManager(BaseUserManager):
             is_staff=True,
             **kwargs,
         )
+        user.is_phone_verified = True
+        user.is_email_verified = True
+
+        user.save()
+
+        return user
 
 
 class User(AbstractUser):
@@ -68,8 +77,8 @@ class User(AbstractUser):
         unique=True,
         validators=[phone_validator],
     )
-    is_verified = models.BooleanField(default=False)
-    is_email_confirmed = models.BooleanField(default=False)
+    is_phone_verified = models.BooleanField(default=False)
+    is_email_verified = models.BooleanField(default=False)
 
     last_name = models.CharField(_("last name"), max_length=150, blank=True, null=True)
 
@@ -102,7 +111,7 @@ class Business(models.Model):
     contact_email = models.EmailField(
         validators=[EmailValidator(message="Invalid email format.")]
     )
-    license = models.CharField(max_length=255)
+    license_id = models.UUIDField(max_length=255)
     is_active = models.BooleanField(default=True)
     is_verified = models.BooleanField(default=False)
     trust_level = models.CharField(
@@ -130,3 +139,24 @@ class Service(models.Model):
 
     def __str__(self):
         return f"{self.name} ({self.service_type})"
+
+
+class VerificationCode(models.Model):
+    token = models.CharField(max_length=255)
+    expires_at = models.DateTimeField()
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="codes")
+    created_at = models.DateTimeField(auto_now_add=True)
+    code_type = models.IntegerField(choices=[(1, "PHONE"), (2, "EMAIL")], default=1)
+    is_used = models.BooleanField(default=True)
+
+    def save(self, *args, **kwargs):
+
+        self.token = hash256(self.token)
+
+        return super().save(*args, **kwargs)
+
+
+class TemporaryCode(models.Model):
+    phone_number = models.CharField(max_length=255)
+    code = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)

@@ -158,6 +158,11 @@ ADMIN = ("Murad", "nuradhussen082@gmail.com")
 CELERY_BROKER_URL = f"redis://{env('REDIS_USERNAME','default')}:{env('REDIS_PASSWORD','')}@{env('REDIS_HOST','localhost')}:{env('REDIS_PORT',6379)}"
 CELERY_BACKEND_URL = f"redis://{env('REDIS_USERNAME','default')}:{env('REDIS_PASSWORD','')}@{env('REDIS_HOST','localhost')}:{env('REDIS_PORT',6379)}"
 
+AUTHENTICATION_BACKENDS = [
+    "accounts.backends.PhoneAuthenticationBackend",
+    "django.contrib.auth.backends.ModelBackend",
+]
+
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(days=90),
