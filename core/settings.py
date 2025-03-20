@@ -185,4 +185,22 @@ SPECTACULAR_SETTINGS = {
     "SWAGGER_UI_DIST": "SIDECAR",  # shorthand to use the sidecar instead
     "SWAGGER_UI_FAVICON_HREF": "SIDECAR",
     "REDOC_DIST": "SIDECAR",
+    "SERVERS": [
+        {
+            "url": "https://potin.gumisofts.com/v01",
+            "description": "V01 Production Server",
+        },
+        {
+            "url": "http://localhost:8000",
+            "description": "Local Development Server",
+        },
+        {
+            "url": "https://zee8vkyn8l.execute-api.eu-north-1.amazonaws.com/dev",
+            "description": "Active Development Server",
+        },
+        {
+            "url": "https://zee8vkyn8l.execute-api.eu-north-1.amazonaws.com/v01",
+            "description": "Alias of V01 Production Server",
+        },
+    ],
 }
