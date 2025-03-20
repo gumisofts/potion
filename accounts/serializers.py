@@ -8,9 +8,11 @@ from django.shortcuts import get_object_or_404
 from rest_framework import exceptions, serializers, validators
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
-
+from .dispatch import user_phone_verified
 from .dispatch import *
 from .models import *
+from datetime import datetime, timedelta
+from core.utils import generate_secure_six_digits
 
 phone_validator = RegexValidator(
     regex=r"^(7|9)\d{8}$",
@@ -86,6 +88,7 @@ class CreateVerificationCodeSerializer(serializers.Serializer):
     code_type = serializers.ChoiceField([(1, "PHONE"), (2, "EMAIL")], write_only=True)
 
     detail = serializers.SerializerMethodField()
+    user = UserGeneralInfoSerializer(read_only=True)
 
     def get_detail(self, instance):
         return "Success"
@@ -99,7 +102,6 @@ class CreateVerificationCodeSerializer(serializers.Serializer):
             user__id=user_id, code_type=code_type, is_used=False
         )
 
-        print(queryset)
         instance = get_object_or_404(queryset, token=hash256(code))
 
         if code_type == 1:
@@ -110,13 +112,14 @@ class CreateVerificationCodeSerializer(serializers.Serializer):
         instance.user.save()
         instance.save()
 
+        user_phone_verified.send(User, **{"instance": instance.user})
+
         return instance
 
 
 class UserLoginSerializer(serializers.Serializer):
     phone_number = serializers.CharField(write_only=True)
     password = serializers.CharField(write_only=True)
-
     refresh = serializers.CharField(read_only=True)
     access = serializers.CharField(read_only=True)
     user = UserGeneralInfoSerializer(read_only=True)
@@ -149,3 +152,25 @@ class UserLoginSerializer(serializers.Serializer):
             "access": str(refresh.access_token),
             "user": user,
         }
+
+
+class ResendVerificationSerializer(serializers.Serializer):
+    user_id = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.filter(is_active=True)
+    )
+    code_type = serializers.ChoiceField(choices=[(1, "PHONE"), (2, "EMAIL")])
+    detail = serializers.CharField(read_only=True)
+
+    def create(self, validated_data):
+        user_id = validated_data.pop("user_id")
+        code_type = validated_data.pop("code_type")
+        token = generate_secure_six_digits()
+        VerificationCode.objects.create(
+            expires_at=datetime.now() + timedelta(minutes=5),
+            token=token,
+            code_type=code_type,
+            user=user_id,
+        )
+        TemporaryCode.objects.create(code=token, phone_number=user_id.phone_number)
+
+        return {"user_id": user_id, "code_type": code_type, "detail": "success"}

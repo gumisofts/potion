@@ -13,7 +13,13 @@ class UserAdmin(admin.ModelAdmin):
 
 
 class TempraryCodeAdmin(admin.ModelAdmin):
-    list_display = ["phone_number", "code", "created_at"]
+    list_display = ["phone_number", "code", "user_id", "created_at"]
+
+    def user_id(self, instance):
+        user = User.objects.filter(phone_number=instance.phone_number).first()
+
+        if user:
+            return user.id
 
 
 class VerificationCodeAdmin(admin.ModelAdmin):

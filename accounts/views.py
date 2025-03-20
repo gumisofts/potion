@@ -50,4 +50,7 @@ class UsersViewset(ListModelMixin, RetrieveModelMixin, GenericViewSet):
 
 class VerificationCodeViewset(CreateModelMixin, GenericViewSet):
     serializer_class = CreateVerificationCodeSerializer
-    # queryset = VerificationCode.objects.all()
+
+
+class VerificationCodeResendViewset(CreateModelMixin, GenericViewSet):
+    serializer_class = ResendVerificationSerializer

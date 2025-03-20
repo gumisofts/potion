@@ -147,11 +147,11 @@ class VerificationCode(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="codes")
     created_at = models.DateTimeField(auto_now_add=True)
     code_type = models.IntegerField(choices=[(1, "PHONE"), (2, "EMAIL")], default=1)
-    is_used = models.BooleanField(default=True)
+    is_used = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
 
-        self.token = hash256(self.token)
+        self.token = hash256(str(self.token))
 
         return super().save(*args, **kwargs)
 
