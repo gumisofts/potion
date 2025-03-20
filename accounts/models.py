@@ -23,6 +23,7 @@ class UserManager(BaseUserManager):
         self,
         phone_number,
         first_name,
+        password,
         last_name=None,
         is_active=True,
         is_superuser=False,
@@ -38,6 +39,7 @@ class UserManager(BaseUserManager):
             is_staff=is_staff,
             **kwargs,
         )
+        user.set_password(password)
 
         user.save()
 
