@@ -1,6 +1,12 @@
-import string, random, hashlib, hmac, re, secrets
-from cryptography.hazmat.primitives import hashes
+import hashlib
+import hmac
+import random
+import re
+import secrets
+import string
+
 from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.serialization import load_der_public_key
 
 

@@ -7,8 +7,8 @@ from django.core.validators import (
     RegexValidator,
 )
 from django.db import models
-from django.utils.translation import gettext_lazy as _
 from django.db.models import Manager
+from django.utils.translation import gettext_lazy as _
 
 from core.utils import hash256
 

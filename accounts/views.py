@@ -1,21 +1,22 @@
-from django.shortcuts import render
+from datetime import datetime
+
+from django.shortcuts import get_object_or_404, render
 from rest_framework import status
-from rest_framework.response import Response
-from rest_framework.views import APIView
-from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 from rest_framework.mixins import (
     CreateModelMixin,
-    UpdateModelMixin,
     ListModelMixin,
     RetrieveModelMixin,
+    UpdateModelMixin,
 )
+from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
+
 from .models import *
 from .serializers import *
 from .utils import send_confirmation_email
-from datetime import datetime
-from django.shortcuts import get_object_or_404
 
 
 class Logout(APIView):

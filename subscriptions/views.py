@@ -1,12 +1,12 @@
 from django.shortcuts import render
 from rest_framework.mixins import CreateModelMixin, ListModelMixin
-from rest_framework.viewsets import GenericViewSet
 from rest_framework.permissions import IsAuthenticated
-
-# Create your views here.
+from rest_framework.viewsets import GenericViewSet
 
 from subscriptions.models import *
 from subscriptions.serializers import *
+
+# Create your views here.
 
 
 class SubscribeViewset(CreateModelMixin, ListModelMixin, GenericViewSet):
