@@ -8,6 +8,7 @@ from rest_framework.mixins import (
     RetrieveModelMixin,
     UpdateModelMixin,
 )
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
@@ -38,6 +39,7 @@ class RegisterViewset(GenericViewSet, CreateModelMixin):
 
 class UsersViewset(ListModelMixin, RetrieveModelMixin, GenericViewSet):
     serializer_class = UserGeneralInfoSerializer
+    permission_classes = [IsAuthenticated]
 
     queryset = User.objects.filter(is_active=True)
 
