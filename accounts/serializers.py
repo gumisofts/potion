@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from uuid import UUID
 
 from django.contrib.auth import authenticate, password_validation
@@ -8,11 +9,12 @@ from django.shortcuts import get_object_or_404
 from rest_framework import exceptions, serializers, validators
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
-from .dispatch import user_phone_verified
-from .dispatch import *
-from .models import *
-from datetime import datetime, timedelta
+
 from core.utils import generate_secure_six_digits
+
+from .dispatch import *
+from .dispatch import user_phone_verified
+from .models import *
 
 phone_validator = RegexValidator(
     regex=r"^(7|9)\d{8}$",

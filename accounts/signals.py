@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
-from .dispatch import *
+
 from core.utils import *
 from wallets.models import Wallet
 
@@ -53,4 +53,3 @@ def upon_registration(sender, instance, method, **kwargs):
             expires_at=datetime.now() + timedelta(minutes=5),
             code_type=1,
         )
-        TemporaryCode.objects.create(code=code, phone_number=instance.phone_number)
