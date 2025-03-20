@@ -32,6 +32,10 @@ class Logout(APIView):
             return Response({"error": str(e)}, status=400)
 
 
+class LoginViewset(GenericViewSet, CreateModelMixin):
+    serializer_class = UserLoginSerializer
+
+
 class RegisterViewset(GenericViewSet, CreateModelMixin):
     serializer_class = RegisterSerializer
     queryset = User.objects.all()

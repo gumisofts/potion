@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from django.contrib.auth import password_validation
+from django.contrib.auth import authenticate, password_validation
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
@@ -111,3 +111,41 @@ class CreateVerificationCodeSerializer(serializers.Serializer):
         instance.save()
 
         return instance
+
+
+class UserLoginSerializer(serializers.Serializer):
+    phone_number = serializers.CharField(write_only=True)
+    password = serializers.CharField(write_only=True)
+
+    refresh = serializers.CharField(read_only=True)
+    access = serializers.CharField(read_only=True)
+    user = UserGeneralInfoSerializer(read_only=True)
+
+    def validate(self, attrs):
+        password = attrs.pop("password")
+        phone_number = attrs.pop("phone_number")
+
+        user = authenticate(phone_number=phone_number, password=password)
+        if not user:
+            raise ValidationError(
+                {
+                    "phone_number": "No user found with the given credentials",
+                    "password": "no user found with the given credentials",
+                }
+            )
+
+        attrs = super().validate(attrs)
+
+        attrs["user"] = user
+
+        return attrs
+
+    def create(self, validated_data):
+        user = validated_data.pop("user")
+        refresh = RefreshToken.for_user(user)
+
+        return {
+            "refresh": str(refresh),
+            "access": str(refresh.access_token),
+            "user": user,
+        }

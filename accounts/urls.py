@@ -10,6 +10,7 @@ router = DefaultRouter()
 router.register("register", RegisterViewset, basename="register")
 router.register("verifications", VerificationCodeViewset, basename="users-confirm-code")
 router.register("users", UsersViewset, basename="users")
+router.register("login", LoginViewset, basename="login")
 # Register Viewsets here
 urlpatterns = router.urls + [
     # path(
