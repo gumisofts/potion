@@ -160,7 +160,6 @@ CELERY_BACKEND_URL = f"redis://{env('REDIS_USERNAME','default')}:{env('REDIS_PAS
 
 AUTHENTICATION_BACKENDS = [
     "accounts.backends.PhoneAuthenticationBackend",
-    "django.contrib.auth.backends.ModelBackend",
 ]
 
 

@@ -75,9 +75,8 @@ class RegisterSerializer(serializers.ModelSerializer):
             phone_number=validated_data.get("phone_number"),
             first_name=validated_data.get("first_name"),
             last_name=validated_data.get("last_name"),
+            password=validated_data.get("password"),
         )
-        user.set_password(password)
-        user.save()
 
         user_registered.send(User, **{"instance": user, "method": "PHONE"})
 
