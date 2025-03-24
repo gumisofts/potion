@@ -7,7 +7,6 @@ from drf_spectacular.views import (
 )
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
-from accounts.serializers import CustomTokenObtainPairSerializer
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -22,13 +21,8 @@ urlpatterns = [
         SpectacularRedocView.as_view(url_name="schema"),
         name="redoc",
     ),
-    path(
-        "api/token/",
-        TokenObtainPairView.as_view(serializer_class=CustomTokenObtainPairSerializer),
-        name="token_obtain_pair",
-    ),
-    path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path("files/", include("files.urls")),
     path("accounts/", include("accounts.urls")),
+    path("wallets/", include("wallets.urls")),
     path("subscriptions/", include("subscriptions.urls")),
 ]

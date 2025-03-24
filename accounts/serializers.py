@@ -22,21 +22,6 @@ phone_validator = RegexValidator(
 )
 
 
-class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
-    @classmethod
-    def get_token(cls, user: User):
-        token = super().get_token(user)
-
-        # Add custom claims to the token payload
-        token["username"] = user.username
-        token["email"] = user.email
-        token["phone_number"] = user.phone_number
-        token["is_staff"] = user.is_staff
-        token["custom_data"] = "This is custom data"
-
-        return token
-
-
 class UserGeneralInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = User

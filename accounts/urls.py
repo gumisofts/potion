@@ -17,11 +17,4 @@ router.register(
 router.register("users", UsersViewset, basename="users")
 router.register("login", LoginViewset, basename="login")
 # Register Viewsets here
-urlpatterns = router.urls + [
-    # path(
-    #     "send-confirmation-email/",
-    #     SendEmailConfirmationTokenAPIView.as_view(),
-    #     name="send_email_confirmation_api_view",
-    # ),
-    # path("confirm-email/", confirm_email_view, name="confirm_email_view"),
-]
+urlpatterns = router.urls + []

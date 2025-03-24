@@ -13,3 +13,9 @@ class UserSubscriptionSerializer(ModelSerializer):
         manager = SubscriptionManager()
 
         return manager.subscribe(**validated_data)
+
+
+class SubscriptionSerializer(ModelSerializer):
+    class Meta:
+        exclude = []
+        model = Subscription

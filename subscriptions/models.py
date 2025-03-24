@@ -18,6 +18,7 @@ class Subscription(models.Model):
     frequency = models.BigIntegerField()
     fixed_price = models.BigIntegerField(null=True, blank=True)
     has_fixed_price = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
 
     def __str__(self):
         return f"{self.name} ({self.service.name})"

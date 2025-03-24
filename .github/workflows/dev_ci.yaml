@@ -30,6 +30,7 @@ jobs:
           echo "PG_PASSWORD=${{ secrets.PG_PASSWORD }}" >> .env
           echo "PG_HOST=${{ vars.PG_HOST }}" >> .env
           echo "PG_PORT=${{ vars.PG_PORT }}" >> .env
+          echo "PG_SSL_MODE=${{ vars.PG_SSL_MODE }}" >> .env
           echo "REDIS_HOST=${{ vars.REDIS_HOST }}" >> .env
           echo "REDIS_PORT=${{ vars.REDIS_PORT }}" >> .env
           echo "EMAIL_HOST=${{ vars.EMAIL_HOST }}" >> .env

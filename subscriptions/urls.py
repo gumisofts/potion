@@ -6,6 +6,7 @@ from subscriptions.views import *
 router = DefaultRouter()
 
 router.register("subscribe", SubscribeViewset, basename="subscribe")
+router.register("subscriptions", SubscriptionViewset, basename="subscriptions")
 
 
 urlpatterns = [] + router.urls

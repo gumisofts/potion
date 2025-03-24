@@ -20,18 +20,6 @@ from .serializers import *
 from .utils import send_confirmation_email
 
 
-class Logout(APIView):
-    def post(self, request):
-        try:
-            refresh_token = request.data["refresh_token"]
-            token = RefreshToken(refresh_token)
-            token.blacklist()
-
-            return Response({"message": "Successfully logged out."}, status=200)
-        except Exception as e:
-            return Response({"error": str(e)}, status=400)
-
-
 class LoginViewset(GenericViewSet, CreateModelMixin):
     serializer_class = UserLoginSerializer
 

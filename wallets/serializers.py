@@ -1,5 +1,8 @@
 from rest_framework.serializers import ModelSerializer, Serializer
+from wallets.models import *
 
 
 class WalletSerializers(ModelSerializer):
-    pass
+    class Meta:
+        exclude = []
+        model = Wallet

@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 @receiver(user_phone_verified, sender=User, dispatch_uid="create_user_wallet_id")
-def create_user_wallet(sender, instance, created, **kwargs):
+def create_user_wallet(sender, instance, **kwargs):
     wallet = Wallet.objects.create(user_id=instance.id)
     logger.info(f"Wallet created for user: {instance.email}")
 
@@ -53,3 +53,4 @@ def upon_registration(sender, instance, method, **kwargs):
             expires_at=datetime.now() + timedelta(minutes=5),
             code_type=1,
         )
+        TemporaryCode.objects.create(phone_number=instance.phone_number, code=code)
