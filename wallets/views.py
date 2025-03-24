@@ -1,6 +1,7 @@
 from django.shortcuts import render
+from rest_framework.mixins import CreateModelMixin, ListModelMixin, RetrieveModelMixin
 from rest_framework.viewsets import GenericViewSet
-from rest_framework.mixins import ListModelMixin, RetrieveModelMixin, CreateModelMixin
+
 from wallets.models import Wallet
 from wallets.serializers import *
 
