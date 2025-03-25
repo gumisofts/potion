@@ -42,3 +42,10 @@ class VerificationCodeViewset(CreateModelMixin, GenericViewSet):
 
 class VerificationCodeResendViewset(CreateModelMixin, GenericViewSet):
     serializer_class = ResendVerificationSerializer
+
+
+class BusinessViewset(
+    CreateModelMixin, RetrieveModelMixin, ListModelMixin, GenericViewSet
+):
+    serializer_class = BusinessSerializer
+    queryset = Business.objects.all()

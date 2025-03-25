@@ -11,6 +11,7 @@ router.register("register", RegisterViewset, basename="register")
 router.register(
     "verifications/confirm", VerificationCodeViewset, basename="users-confirm-code"
 )
+router.register("business", BusinessViewset, basename="business")
 router.register(
     "verifications/resend", VerificationCodeResendViewset, basename="users-resend-code"
 )
