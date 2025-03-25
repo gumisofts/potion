@@ -84,7 +84,7 @@ DATABASES = {
         "HOST": env("PG_HOST"),
         "PORT": env("PG_PORT", "5432"),
         "CONN_MAX_AGE": None,
-        "OPTIONS": {"sslmode": env("POSTGRES_SSL_MODE")},
+        "OPTIONS": {"sslmode": env("PG_SSL_MODE")},
     }
 }
 
