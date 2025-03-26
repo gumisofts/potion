@@ -16,5 +16,9 @@ router.register(
 )
 router.register("users", UsersViewset, basename="users")
 router.register("login", LoginViewset, basename="login")
+router.register("register-business", RegisterBusinessViewset, basename="register-business")
+router.register("business-detail", BusinessDetailViewset, basename="business-detail")
+router.register("business-service", BusinessServiceListViewset, basename="business-service")
+router.register("business-service-detail", BusinessServiceDetailViewset, basename="business-service-detail")
 # Register Viewsets here
 urlpatterns = router.urls + []

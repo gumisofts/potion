@@ -19,16 +19,6 @@ def create_user_wallet(sender, instance, **kwargs):
     logger.info(f"Wallet created for user: {instance.email}")
 
 
-@receiver(pre_save, sender=Business, dispatch_uid="create_business_wallet_id")
-def create_business_wallet(sender, instance, created, **kwargs):
-    if created:
-        wallet = Wallet.objects.create(user_id=instance.owner.id)
-        instance.wallet_id = wallet.id
-        logger.info(f"Wallet created for business: {instance.name}")
-    else:
-        logger.info(f"Signal received for business update: {instance.name}")
-
-
 @receiver(user_registered, sender=User)
 def upon_registration(sender, instance, method, **kwargs):
 

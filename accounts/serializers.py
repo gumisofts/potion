@@ -16,6 +16,10 @@ from .dispatch import *
 from .dispatch import user_phone_verified
 from .models import *
 
+
+from wallets.models import Wallet
+from subscriptions.models import Subscription
+
 phone_validator = RegexValidator(
     regex=r"^(7|9)\d{8}$",
     message="Phone number must be 8-12 digits (e.g., +251945678903).",
@@ -160,3 +164,192 @@ class ResendVerificationSerializer(serializers.Serializer):
         TemporaryCode.objects.create(code=token, phone_number=user_id.phone_number)
 
         return {"user_id": user_id, "code_type": code_type, "detail": "success"}
+
+
+
+class RegisterBusinessSerializer(serializers.ModelSerializer):
+    contact_email = serializers.EmailField(
+        required=True,
+        validators=[validators.UniqueValidator(queryset=Business.objects.all())],
+    )
+    contact_phone = serializers.CharField(
+        required=True,
+        max_length=255,
+        validators=[
+            phone_validator,
+            validators.UniqueValidator(queryset=Business.objects.all()),
+        ],
+    )
+
+    class Meta:
+        model = Business
+        fields = (
+            "name",
+            "contact_phone",
+            "contact_email",
+            "license_id",
+            "trust_level",
+        )
+        read_only_fields = ("id", "owner", "wallet") 
+
+    def create(self, validated_data):
+        """
+        Handles business creation.
+        """
+        request = self.context.get('request')
+        if not request or not request.user.is_authenticated:
+            raise serializers.ValidationError("User is not authenticated.")
+
+        wallet = Wallet.objects.create(user=request.user)
+
+        business: Business = Business.objects.create(
+            owner=request.user,
+            name=validated_data.get("name"),
+            contact_phone=validated_data.get("contact_phone"),
+            contact_email=validated_data.get("contact_email"),
+            license_id=validated_data.get("license_id"),
+            trust_level=validated_data.get("trust_level"),
+        )
+
+        # business.save()
+        return business
+    
+
+
+class BusinessDetailSerializer(serializers.ModelSerializer):
+    contact_email = serializers.EmailField(
+        required=False,
+    )
+    contact_phone = serializers.CharField(
+        required=False,
+        max_length=255,
+        validators=[
+            phone_validator,
+        ],
+    )
+
+    class Meta:
+        model = Business
+        fields = (
+            "name",
+            "contact_phone",
+            "contact_email",
+            "license_id",
+            "trust_level",
+        )
+        read_only_fields = ("id", "owner", "wallet") 
+
+    
+    def update(self, instance, validated_data):
+        """
+        Handles business updates.
+        """
+        instance.name = validated_data.get("name", instance.name)
+        instance.contact_phone = validated_data.get("contact_phone", instance.contact_phone)
+        instance.contact_email = validated_data.get("contact_email", instance.contact_email)
+        instance.license_id = validated_data.get("license_id", instance.license_id)
+        instance.trust_level = validated_data.get("trust_level", instance.trust_level)
+
+        instance.save()
+        return instance
+
+
+class BusinessServiceSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Service
+        fields = (
+            "id",
+            "name",
+            "service_type",
+            "is_active",
+        )
+        read_only_fields = ("id", "business")
+
+    def create(self, validated_data):
+        """
+        Handles Business service creation.
+        """
+
+        request = self.context.get('request')
+        if not request or not request.user.is_authenticated:
+            raise serializers.ValidationError("User is not authenticated.")
+        
+        # business = validated_data.get("business")
+        business = Business.objects.filter(owner=request.user).first()
+        if not business:
+            raise serializers.ValidationError("No business found for the authenticated user.")
+
+        service = Service.objects.create(
+            business=business,
+            name=validated_data.get("name"),
+            service_type=validated_data.get("service_type"),
+            is_active=validated_data.get("is_active", True),
+        )
+
+        return service
+
+    def update(self, instance, validated_data):
+        """
+        Handles Business service updates.
+        """
+        instance.name = validated_data.get("name", instance.name)
+        instance.service_type = validated_data.get("service_type", instance.service_type)
+        instance.is_active = validated_data.get("is_active", instance.is_active)
+
+        instance.save()
+        return instance
+    
+class ServiceSubscriptionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Subscription
+        fields = (
+            "id",
+            "name",
+            "frequency",
+            "fixed_price",
+            "has_fixed_price",
+        )
+        read_only_fields = ("id", "service")
+
+    
+    def create(self, validated_data):
+        """
+        Handles Business service creation.
+        """
+
+        request = self.context.get('request')
+        if not request or not request.user.is_authenticated:
+            raise serializers.ValidationError("User is not authenticated.")
+        
+        business = Business.objects.filter(owner=request.user).first()
+        if not business:
+            raise serializers.ValidationError("No business found for the authenticated user.")
+        
+        service = Service.objects.filter(business=business).first()
+
+        if not service:
+            raise serializers.ValidationError("No service found for the authenticated user.")
+
+        subscription = Subscription.objects.create(
+            service=service,
+            name=validated_data.get("name"),
+            frequency=validated_data.get("frequency"),
+            fixed_price=validated_data.get("fixed_price"),
+            has_fixed_price=validated_data.get("has_fixed_price", True),
+        )
+
+        return subscription
+
+    def update(self, instance, validated_data):
+        """
+        Handles Service subscription updates.
+        """
+        instance.name = validated_data.get("name", instance.name)
+        instance.frequency = validated_data.get("frequency", instance.frequency)
+        instance.fixed_price = validated_data.get("fixed_price", instance.fixed_price)
+        instance.has_fixed_price = validated_data.get("has_fixed_price", instance.has_fixed_price)
+
+        instance.save()
+        return instance
+    

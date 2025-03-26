@@ -42,3 +42,26 @@ class VerificationCodeViewset(CreateModelMixin, GenericViewSet):
 
 class VerificationCodeResendViewset(CreateModelMixin, GenericViewSet):
     serializer_class = ResendVerificationSerializer
+
+
+class RegisterBusinessViewset(GenericViewSet, CreateModelMixin):
+    queryset = Business.objects.all()
+    serializer_class = RegisterBusinessSerializer
+
+
+class BusinessDetailViewset(GenericViewSet, UpdateModelMixin, RetrieveModelMixin, ListModelMixin):
+    queryset = Business.objects.all()
+    serializer_class = BusinessDetailSerializer
+    permission_classes = [IsAuthenticated]
+
+
+class BusinessServiceListViewset(GenericViewSet, ListModelMixin, CreateModelMixin):
+    queryset = Service.objects.all()
+    serializer_class = BusinessServiceSerializer
+    permission_classes = [IsAuthenticated]
+
+    
+class BusinessServiceDetailViewset(GenericViewSet, UpdateModelMixin, RetrieveModelMixin, ListModelMixin):
+    queryset = Service.objects.all()
+    serializer_class = BusinessServiceSerializer
+    permission_classes = [IsAuthenticated]
