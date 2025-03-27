@@ -15,6 +15,8 @@ from rest_framework.viewsets import GenericViewSet
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 
+from accounts.permissions import *
+
 from .models import *
 from .serializers import *
 from .utils import send_confirmation_email
@@ -42,3 +44,18 @@ class VerificationCodeViewset(CreateModelMixin, GenericViewSet):
 
 class VerificationCodeResendViewset(CreateModelMixin, GenericViewSet):
     serializer_class = ResendVerificationSerializer
+
+
+class BusinessViewset(
+    CreateModelMixin, RetrieveModelMixin, ListModelMixin, GenericViewSet
+):
+    serializer_class = BusinessSerializer
+    queryset = Business.objects.all()
+
+
+class BusinessServiceViewset(
+    CreateModelMixin, RetrieveModelMixin, ListModelMixin, GenericViewSet
+):
+    serializer_class = BusinessServiceSerializer
+    queryset = Service.objects.filter(is_active=True)
+    permission_classes = [BusinnessItemPermission]
