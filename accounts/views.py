@@ -15,10 +15,11 @@ from rest_framework.viewsets import GenericViewSet
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 
+from accounts.permissions import *
+
 from .models import *
 from .serializers import *
 from .utils import send_confirmation_email
-from accounts.permissions import *
 
 
 class LoginViewset(GenericViewSet, CreateModelMixin):

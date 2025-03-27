@@ -6,12 +6,14 @@ from botocore.config import Config
 from botocore.exceptions import NoCredentialsError
 from django.conf import settings
 from django.shortcuts import get_object_or_404
+from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
 from rest_framework.parsers import FormParser, MultiPartParser
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.viewsets import ViewSet
+from rest_framework.viewsets import GenericViewSet, ViewSet
 
+from files.serializers import *
 from files.spectacular_schema import (
     file_download_schema,
     file_upload_schema,
@@ -19,9 +21,6 @@ from files.spectacular_schema import (
 
 from .models import FileModel
 from .serializers import FileDownloadSerializer, FileUploadSerializer
-from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
-from rest_framework.viewsets import GenericViewSet
-from files.serializers import *
 
 
 class GenerateSignedUrlView(APIView):
