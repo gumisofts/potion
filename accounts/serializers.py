@@ -11,14 +11,12 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from core.utils import generate_secure_six_digits
+from subscriptions.models import Subscription
+from wallets.models import Wallet
 
 from .dispatch import *
 from .dispatch import user_phone_verified
 from .models import *
-
-
-from wallets.models import Wallet
-from subscriptions.models import Subscription
 
 phone_validator = RegexValidator(
     regex=r"^(7|9)\d{8}$",
