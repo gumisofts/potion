@@ -49,7 +49,9 @@ class RegisterBusinessViewset(GenericViewSet, CreateModelMixin):
     serializer_class = RegisterBusinessSerializer
 
 
-class BusinessDetailViewset(GenericViewSet, UpdateModelMixin, RetrieveModelMixin, ListModelMixin):
+class BusinessDetailViewset(
+    GenericViewSet, UpdateModelMixin, RetrieveModelMixin, ListModelMixin
+):
     queryset = Business.objects.all()
     serializer_class = BusinessDetailSerializer
     permission_classes = [IsAuthenticated]
@@ -60,8 +62,10 @@ class BusinessServiceListViewset(GenericViewSet, ListModelMixin, CreateModelMixi
     serializer_class = BusinessServiceSerializer
     permission_classes = [IsAuthenticated]
 
-    
-class BusinessServiceDetailViewset(GenericViewSet, UpdateModelMixin, RetrieveModelMixin, ListModelMixin):
+
+class BusinessServiceDetailViewset(
+    GenericViewSet, UpdateModelMixin, RetrieveModelMixin, ListModelMixin
+):
     queryset = Service.objects.all()
     serializer_class = BusinessServiceSerializer
     permission_classes = [IsAuthenticated]

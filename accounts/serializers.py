@@ -166,7 +166,6 @@ class ResendVerificationSerializer(serializers.Serializer):
         return {"user_id": user_id, "code_type": code_type, "detail": "success"}
 
 
-
 class RegisterBusinessSerializer(serializers.ModelSerializer):
     contact_email = serializers.EmailField(
         required=True,
@@ -190,13 +189,13 @@ class RegisterBusinessSerializer(serializers.ModelSerializer):
             "license_id",
             "trust_level",
         )
-        read_only_fields = ("id", "owner", "wallet") 
+        read_only_fields = ("id", "owner", "wallet")
 
     def create(self, validated_data):
         """
         Handles business creation.
         """
-        request = self.context.get('request')
+        request = self.context.get("request")
         if not request or not request.user.is_authenticated:
             raise serializers.ValidationError("User is not authenticated.")
 
@@ -213,7 +212,6 @@ class RegisterBusinessSerializer(serializers.ModelSerializer):
 
         # business.save()
         return business
-    
 
 
 class BusinessDetailSerializer(serializers.ModelSerializer):
@@ -237,16 +235,19 @@ class BusinessDetailSerializer(serializers.ModelSerializer):
             "license_id",
             "trust_level",
         )
-        read_only_fields = ("id", "owner", "wallet") 
+        read_only_fields = ("id", "owner", "wallet")
 
-    
     def update(self, instance, validated_data):
         """
         Handles business updates.
         """
         instance.name = validated_data.get("name", instance.name)
-        instance.contact_phone = validated_data.get("contact_phone", instance.contact_phone)
-        instance.contact_email = validated_data.get("contact_email", instance.contact_email)
+        instance.contact_phone = validated_data.get(
+            "contact_phone", instance.contact_phone
+        )
+        instance.contact_email = validated_data.get(
+            "contact_email", instance.contact_email
+        )
         instance.license_id = validated_data.get("license_id", instance.license_id)
         instance.trust_level = validated_data.get("trust_level", instance.trust_level)
 
@@ -271,14 +272,16 @@ class BusinessServiceSerializer(serializers.ModelSerializer):
         Handles Business service creation.
         """
 
-        request = self.context.get('request')
+        request = self.context.get("request")
         if not request or not request.user.is_authenticated:
             raise serializers.ValidationError("User is not authenticated.")
-        
+
         # business = validated_data.get("business")
         business = Business.objects.filter(owner=request.user).first()
         if not business:
-            raise serializers.ValidationError("No business found for the authenticated user.")
+            raise serializers.ValidationError(
+                "No business found for the authenticated user."
+            )
 
         service = Service.objects.create(
             business=business,
@@ -294,12 +297,15 @@ class BusinessServiceSerializer(serializers.ModelSerializer):
         Handles Business service updates.
         """
         instance.name = validated_data.get("name", instance.name)
-        instance.service_type = validated_data.get("service_type", instance.service_type)
+        instance.service_type = validated_data.get(
+            "service_type", instance.service_type
+        )
         instance.is_active = validated_data.get("is_active", instance.is_active)
 
         instance.save()
         return instance
-    
+
+
 class ServiceSubscriptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Subscription
@@ -312,24 +318,27 @@ class ServiceSubscriptionSerializer(serializers.ModelSerializer):
         )
         read_only_fields = ("id", "service")
 
-    
     def create(self, validated_data):
         """
         Handles Business service creation.
         """
 
-        request = self.context.get('request')
+        request = self.context.get("request")
         if not request or not request.user.is_authenticated:
             raise serializers.ValidationError("User is not authenticated.")
-        
+
         business = Business.objects.filter(owner=request.user).first()
         if not business:
-            raise serializers.ValidationError("No business found for the authenticated user.")
-        
+            raise serializers.ValidationError(
+                "No business found for the authenticated user."
+            )
+
         service = Service.objects.filter(business=business).first()
 
         if not service:
-            raise serializers.ValidationError("No service found for the authenticated user.")
+            raise serializers.ValidationError(
+                "No service found for the authenticated user."
+            )
 
         subscription = Subscription.objects.create(
             service=service,
@@ -348,8 +357,9 @@ class ServiceSubscriptionSerializer(serializers.ModelSerializer):
         instance.name = validated_data.get("name", instance.name)
         instance.frequency = validated_data.get("frequency", instance.frequency)
         instance.fixed_price = validated_data.get("fixed_price", instance.fixed_price)
-        instance.has_fixed_price = validated_data.get("has_fixed_price", instance.has_fixed_price)
+        instance.has_fixed_price = validated_data.get(
+            "has_fixed_price", instance.has_fixed_price
+        )
 
         instance.save()
         return instance
-    
