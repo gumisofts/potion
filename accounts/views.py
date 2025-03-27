@@ -18,6 +18,7 @@ from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 from .models import *
 from .serializers import *
 from .utils import send_confirmation_email
+from accounts.permissions import *
 
 
 class LoginViewset(GenericViewSet, CreateModelMixin):
@@ -49,3 +50,11 @@ class BusinessViewset(
 ):
     serializer_class = BusinessSerializer
     queryset = Business.objects.all()
+
+
+class BusinessServiceViewset(
+    CreateModelMixin, RetrieveModelMixin, ListModelMixin, GenericViewSet
+):
+    serializer_class = BusinessServiceSerializer
+    queryset = Service.objects.filter(is_active=True)
+    permission_classes = [BusinnessItemPermission]

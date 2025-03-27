@@ -163,6 +163,7 @@ class ResendVerificationSerializer(serializers.Serializer):
 
 
 class BusinessSerializer(serializers.ModelSerializer):
+    id = serializers.UUIDField(read_only=True)
     is_active = serializers.BooleanField(read_only=True)
     is_verified = serializers.BooleanField(read_only=True)
     trust_level = serializers.ChoiceField(
@@ -171,4 +172,12 @@ class BusinessSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Business
+        exclude = []
+
+
+class BusinessServiceSerializer(serializers.ModelSerializer):
+    id = serializers.UUIDField(read_only=True)
+
+    class Meta:
+        model = Service
         exclude = []
