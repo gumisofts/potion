@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 from rest_framework.serializers import ModelSerializer, Serializer, ValidationError
+=======
+from rest_framework.serializers import ModelSerializer, Serializer
+>>>>>>> dev-v01
 
 from wallets.models import *
 
@@ -7,6 +11,7 @@ class WalletSerializers(ModelSerializer):
     class Meta:
         exclude = []
         model = Wallet
+<<<<<<< HEAD
 
 
 class TransactionWalletSerializer(ModelSerializer):
@@ -53,3 +58,5 @@ class TransactionWalletSerializer(ModelSerializer):
 
         instance.save()
         return instance
+=======
+>>>>>>> dev-v01

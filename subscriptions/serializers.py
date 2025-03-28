@@ -3,9 +3,12 @@ from rest_framework.serializers import ModelSerializer
 
 from subscriptions.models import *
 
+<<<<<<< HEAD
 from accounts.models import *
 from .models import *
 
+=======
+>>>>>>> dev-v01
 
 class UserSubscriptionSerializer(ModelSerializer):
     class Meta:
@@ -20,6 +23,7 @@ class UserSubscriptionSerializer(ModelSerializer):
 
 class SubscriptionSerializer(ModelSerializer):
     class Meta:
+<<<<<<< HEAD
         model = Subscription
         fields = (
             "name",
@@ -72,3 +76,7 @@ class SubscriptionSerializer(ModelSerializer):
 
         instance.save()
         return instance
+=======
+        exclude = []
+        model = Subscription
+>>>>>>> dev-v01
