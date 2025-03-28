@@ -1,17 +1,12 @@
 from django.shortcuts import render
-<<<<<<< HEAD
-<<<<<<< Updated upstream
 
 # Create your views here.
-=======
 from rest_framework.mixins import CreateModelMixin, ListModelMixin, RetrieveModelMixin, UpdateModelMixin
 from rest_framework.viewsets import GenericViewSet
 
-=======
 from rest_framework.mixins import CreateModelMixin, ListModelMixin, RetrieveModelMixin
 from rest_framework.viewsets import GenericViewSet
 
->>>>>>> dev-v01
 from wallets.models import Wallet
 from wallets.serializers import *
 
@@ -30,12 +25,8 @@ class SendMoneyP2PViewset(CreateModelMixin, GenericViewSet):
 
 class SendMoneyExternalViewset(CreateModelMixin, GenericViewSet):
     serializer_class = None
-<<<<<<< HEAD
 
 
 class TransactionWalletViewsets(GenericViewSet, UpdateModelMixin, RetrieveModelMixin, ListModelMixin, CreateModelMixin):
     queryset = Transaction.objects.all()
     serializer_class = TransactionWalletSerializer
->>>>>>> Stashed changes
-=======
->>>>>>> dev-v01
