@@ -21,7 +21,7 @@ class Subscription(models.Model):
     is_active = models.BooleanField(default=True)
 
     def __str__(self):
-        return f"{self.name} ({self.service.name})"
+        return f"{self.name} ({self.service.phone_number})"
 
 
 class SubscriptionManager(Manager):

@@ -1,5 +1,12 @@
 from django.shortcuts import render
-from rest_framework.mixins import CreateModelMixin, ListModelMixin, RetrieveModelMixin
+
+# Create your views here.
+from rest_framework.mixins import (
+    CreateModelMixin,
+    ListModelMixin,
+    RetrieveModelMixin,
+    UpdateModelMixin,
+)
 from rest_framework.viewsets import GenericViewSet
 
 from wallets.models import Wallet
@@ -20,3 +27,14 @@ class SendMoneyP2PViewset(CreateModelMixin, GenericViewSet):
 
 class SendMoneyExternalViewset(CreateModelMixin, GenericViewSet):
     serializer_class = None
+
+
+class TransactionWalletViewsets(
+    GenericViewSet,
+    UpdateModelMixin,
+    RetrieveModelMixin,
+    ListModelMixin,
+    CreateModelMixin,
+):
+    queryset = Transaction.objects.all()
+    serializer_class = TransactionWalletSerializer
