@@ -1,5 +1,4 @@
 from rest_framework.serializers import ModelSerializer, Serializer, ValidationError
-from rest_framework.serializers import ModelSerializer, Serializer
 
 from wallets.models import *
 
@@ -21,16 +20,16 @@ class TransactionWalletSerializer(ModelSerializer):
             "status",
         )
         read_only_fields = ("id", "wallet")
-    
+
     def create(self, validated_data):
         """
         Handles Create a new transaction
         """
 
-        request = self.context.get('request')
+        request = self.context.get("request")
         if not request or not request.user.is_authenticated:
             raise ValidationError("User is not authenticated.")
-        
+
         wallet = Wallet.objects.filter(user=request.user).first()
         if not wallet:
             raise ValidationError("No wallet found for the authenticated user.")
@@ -44,7 +43,6 @@ class TransactionWalletSerializer(ModelSerializer):
         )
 
         return transaction
-
 
     def update(self, instance, validated_data):
         """

@@ -7,6 +7,10 @@ router = DefaultRouter()
 
 router.register("wallets", WalletViewsets)
 
-router.register("wallet-transaction-fund", TransactionWalletViewsets, basename="wallet_transaction_fund_api_view")
+router.register(
+    "wallet-transaction-fund",
+    TransactionWalletViewsets,
+    basename="wallet_transaction_fund_api_view",
+)
 
 urlpatterns = router.urls + []
