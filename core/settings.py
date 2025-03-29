@@ -24,7 +24,6 @@ CORS_ALLOW_CREDENTIALS = True
 
 AUTH_USER_MODEL = "accounts.User"
 INSTALLED_APPS = [
-    "daphne",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -34,6 +33,8 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework_simplejwt",
     "drf_spectacular",
+    "drf_spectacular_sidecar",
+    "files",
     "accounts",
     "wallets",
     "subscriptions",
@@ -54,7 +55,7 @@ ROOT_URLCONF = "core.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": ["notifications/templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -83,7 +84,7 @@ DATABASES = {
         "HOST": env("PG_HOST"),
         "PORT": env("PG_PORT", "5432"),
         "CONN_MAX_AGE": None,
-        "OPTIONS": {"sslmode": env("POSTGRES_SSL_MODE")},
+        "OPTIONS": {"sslmode": env("PG_SSL_MODE")},
     }
 }
 
@@ -122,7 +123,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = "static/"
+STATIC_URL = env("STATIC_URL", "static/")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
@@ -144,13 +145,22 @@ EMAIL_USE_SSL = True
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 EMAIL_HOST = env("EMAIL_HOST")
 EMAIL_PORT = env("EMAIL_PORT")
-EMAIL_HOST_USER = env("EMAIL_HOST_USER")
-EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
+EMAIL_USER = env("EMAIL_USER")
+EMAIL_HOST_PASSWORD = env("EMAIL_USER_PASSWORD")
+
+AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY")
+AWS_STORAGE_BUCKET_NAME = env("AWS_STORAGE_BUCKET_NAME")
+AWS_S3_REGION_NAME = env("AWS_S3_REGION_NAME", "eu-north-1")
 
 ADMIN = ("Murad", "nuradhussen082@gmail.com")
 
 CELERY_BROKER_URL = f"redis://{env('REDIS_USERNAME','default')}:{env('REDIS_PASSWORD','')}@{env('REDIS_HOST','localhost')}:{env('REDIS_PORT',6379)}"
 CELERY_BACKEND_URL = f"redis://{env('REDIS_USERNAME','default')}:{env('REDIS_PASSWORD','')}@{env('REDIS_HOST','localhost')}:{env('REDIS_PORT',6379)}"
+
+AUTHENTICATION_BACKENDS = [
+    "accounts.backends.PhoneAuthenticationBackend",
+]
 
 
 SIMPLE_JWT = {
@@ -174,4 +184,22 @@ SPECTACULAR_SETTINGS = {
     "SWAGGER_UI_DIST": "SIDECAR",  # shorthand to use the sidecar instead
     "SWAGGER_UI_FAVICON_HREF": "SIDECAR",
     "REDOC_DIST": "SIDECAR",
+    "SERVERS": [
+        {
+            "url": "https://potin.gumisofts.com/v01",
+            "description": "V01 Production Server",
+        },
+        {
+            "url": "http://localhost:8000",
+            "description": "Local Development Server",
+        },
+        {
+            "url": "https://zee8vkyn8l.execute-api.eu-north-1.amazonaws.com/dev",
+            "description": "Active Development Server",
+        },
+        {
+            "url": "https://zee8vkyn8l.execute-api.eu-north-1.amazonaws.com/v01",
+            "description": "Alias of V01 Production Server",
+        },
+    ],
 }
