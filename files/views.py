@@ -6,11 +6,14 @@ from botocore.config import Config
 from botocore.exceptions import NoCredentialsError
 from django.conf import settings
 from django.shortcuts import get_object_or_404
+from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
 from rest_framework.parsers import FormParser, MultiPartParser
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.viewsets import ViewSet
+from rest_framework.viewsets import GenericViewSet, ViewSet
 
+from files.serializers import *
 from files.spectacular_schema import (
     file_download_schema,
     file_upload_schema,
@@ -21,8 +24,9 @@ from .serializers import FileDownloadSerializer, FileUploadSerializer
 
 
 class GenerateSignedUrlView(APIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = SignedUrlSerializer
 
-    # @generate_signed_url_schema
     def get(self, request):
         """Generate a signed URL for direct S3 upload."""
         s3_client = boto3.client(
@@ -33,7 +37,7 @@ class GenerateSignedUrlView(APIView):
             config=Config(signature_version="s3v4"),
         )
 
-        file_name = f"{uuid4()}.{request.query_params.get('extension')}"
+        file_name = f"{uuid4()}.{request.query_params.get('ext')}"
         file_path = f"uploads/{file_name}"
 
         try:
@@ -102,6 +106,11 @@ class UploadViewSet(ViewSet):
             response = {"message": "Invalid request", "errors": my_file.errors}
 
         return Response(response)
+
+
+class FileViewset(ListModelMixin, RetrieveModelMixin, GenericViewSet):
+    serializer_class = FileSerializer
+    permission_classes = [IsAuthenticated]
 
 
 class FileDownloadView(APIView):

@@ -168,3 +168,24 @@ class ResendVerificationSerializer(serializers.Serializer):
         TemporaryCode.objects.create(code=token, phone_number=user_id.phone_number)
 
         return {"user_id": user_id, "code_type": code_type, "detail": "success"}
+
+
+class BusinessSerializer(serializers.ModelSerializer):
+    id = serializers.UUIDField(read_only=True)
+    is_active = serializers.BooleanField(read_only=True)
+    is_verified = serializers.BooleanField(read_only=True)
+    trust_level = serializers.ChoiceField(
+        choices=(("low", "Low"), ("medium", "Medium"), ("high", "High"))
+    )
+
+    class Meta:
+        model = Business
+        exclude = []
+
+
+class BusinessServiceSerializer(serializers.ModelSerializer):
+    id = serializers.UUIDField(read_only=True)
+
+    class Meta:
+        model = Service
+        exclude = []
