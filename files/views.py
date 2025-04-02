@@ -36,8 +36,9 @@ class GenerateSignedUrlView(APIView):
             region_name=settings.AWS_S3_REGION_NAME,
             config=Config(signature_version="s3v4"),
         )
+        file_id = uuid4()
 
-        file_name = f"{uuid4()}.{request.query_params.get('ext')}"
+        file_name = f"{file_id}.{request.query_params.get('ext')}"
         file_path = f"uploads/{file_name}"
 
         try:
@@ -53,7 +54,9 @@ class GenerateSignedUrlView(APIView):
                 ExpiresIn=600,  # URL expires in 10 minutes
             )
 
-            return Response({"signed_url": signed_url, "file_name": file_name})
+            return Response(
+                {"signed_url": signed_url, "file_name": file_name, "id": file_id}
+            )
 
         except NoCredentialsError:
             return Response({"error": "AWS credentials not found"}, status=500)
