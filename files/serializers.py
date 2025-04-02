@@ -1,14 +1,15 @@
-from rest_framework import serializers
-from rest_framework.serializers import FileField, ModelSerializer
-from rest_framework.exceptions import ValidationError
-from .models import FileModel
+import mimetypes
+import urllib.parse
+from uuid import uuid4
 
 import boto3
 from botocore.config import Config
 from django.conf import settings
-from uuid import uuid4
-import urllib.parse
-import mimetypes
+from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
+from rest_framework.serializers import FileField, ModelSerializer
+
+from .models import FileModel
 
 
 class FileDownloadSerializer(serializers.Serializer):

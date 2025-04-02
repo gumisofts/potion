@@ -6,7 +6,7 @@ from botocore.config import Config
 from botocore.exceptions import NoCredentialsError
 from django.conf import settings
 from django.shortcuts import get_object_or_404
-from rest_framework.mixins import ListModelMixin, RetrieveModelMixin, CreateModelMixin
+from rest_framework.mixins import CreateModelMixin, ListModelMixin, RetrieveModelMixin
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response

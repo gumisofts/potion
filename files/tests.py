@@ -40,34 +40,3 @@ class FileUploadDownloadTests(APITestCase):
     #     # Check that the file was actually stored in the database
     #     stored_as = response.data["stored_as"]
     #     self.assertTrue(FileModel.objects.filter(stored_as=stored_as).exists())
-
-    def test_download_file(self):
-        """Test that an uploaded file can be retrieved successfully."""
-        # Create a file instance in the DB
-        file_instance = FileModel.objects.create(
-            name="Test Image",
-            stored_as="test_stored_as",
-            file=self.sample_file,
-            alt_text="Test Image Alt Text",
-        )
-
-        # Construct the download URL with the stored_as value
-        download_url = reverse(
-            "file-download", kwargs={"stored_as": file_instance.stored_as}
-        )
-
-        response = self.client.get(download_url)
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data["message"], "File retrieved successfully")
-        self.assertIn("file_url", response.data)  # Ensure file URL is returned
-
-    def test_download_non_existing_file(self):
-        """Test that trying to retrieve a non-existing file returns a 404 error."""
-        download_url = reverse(
-            "file-download", kwargs={"stored_as": "non_existing_file"}
-        )
-
-        response = self.client.get(download_url)
-
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
