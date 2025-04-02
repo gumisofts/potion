@@ -8,6 +8,9 @@ from .models import *
 
 
 class UserSubscriptionSerializer(ModelSerializer):
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    is_active = serializers.BooleanField(read_only=True)
+
     class Meta:
         model = UserSubscription
         exclude = []

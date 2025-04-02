@@ -44,3 +44,14 @@ class FileMetadataSerializer(serializers.Serializer):
     file_name = serializers.CharField()
     file_size = serializers.IntegerField()
     alt_text = serializers.CharField(required=False, allow_blank=True)
+
+
+class FileSerializer(serializers.ModelSerializer):
+    class Meta:
+        exclude = []
+        model = FileModel
+
+
+class SignedUrlSerializer(serializers.Serializer):
+    signed_url = serializers.CharField()
+    file_name = serializers.CharField()
