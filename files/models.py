@@ -100,3 +100,11 @@ class FileModel(models.Model):
         # Assign to fields and save
         self.optimized_image.save(optimized_filename, optimized_file, save=False)
         self.thumbnail.save(thumbnail_filename, thumbnail_file, save=False)
+
+
+class SignedUrl(models.Model):
+    id = models.UUIDField(default=uuid4, primary_key=True)
+    url = models.CharField(max_length=255)
+    hash = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
