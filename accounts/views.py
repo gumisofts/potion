@@ -51,6 +51,7 @@ class BusinessViewset(
 ):
     serializer_class = BusinessSerializer
     queryset = Business.objects.all()
+    permission_classes = [IsAuthenticated]
 
 
 class BusinessServiceViewset(

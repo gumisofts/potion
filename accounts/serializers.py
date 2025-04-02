@@ -174,9 +174,8 @@ class BusinessSerializer(serializers.ModelSerializer):
     id = serializers.UUIDField(read_only=True)
     is_active = serializers.BooleanField(read_only=True)
     is_verified = serializers.BooleanField(read_only=True)
-    trust_level = serializers.ChoiceField(
-        choices=(("low", "Low"), ("medium", "Medium"), ("high", "High"))
-    )
+    trust_level = serializers.HiddenField(default="medium")
+    owner = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     class Meta:
         model = Business

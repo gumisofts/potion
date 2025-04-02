@@ -8,7 +8,7 @@ from accounts.models import Business, User
 
 class Wallet(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid4)
-    user = models.OneToOneField(User, on_delete=models.PROTECT)
+    user = models.ForeignKey(User, on_delete=models.PROTECT)
     business = models.OneToOneField(
         Business, on_delete=models.PROTECT, null=True, blank=True
     )

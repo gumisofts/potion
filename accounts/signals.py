@@ -19,7 +19,7 @@ def create_user_wallet(sender, instance, **kwargs):
     logger.info(f"Wallet created for user: {instance.email}")
 
 
-@receiver(pre_save, sender=Business, dispatch_uid="create_business_wallet_id")
+@receiver(post_save, sender=Business)
 def create_business_wallet(sender, instance, created, **kwargs):
     if created:
         wallet = Wallet.objects.create(user_id=instance.owner.id)
