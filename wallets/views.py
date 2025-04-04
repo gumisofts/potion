@@ -14,9 +14,16 @@ class WalletViewsets(RetrieveModelMixin, GenericViewSet):
         return super().get_queryset()
 
 
-class SendMoneyP2PViewset(CreateModelMixin, GenericViewSet):
-    serializer_class = None
+class TransactionViewsets(ListModelMixin, RetrieveModelMixin, GenericViewSet):
+    serializer_class = TransactionSerializer
+    permission_classes = []
+    queryset = Transaction.objects.all()
 
 
-class SendMoneyExternalViewset(CreateModelMixin, GenericViewSet):
+class SendMoneyP2PViewsets(CreateModelMixin, GenericViewSet):
+    serializer_class = SendMoneyP2PSerializer
+    permission_classes = []
+
+
+class SendMoneyExternalViewsets(CreateModelMixin, GenericViewSet):
     serializer_class = None

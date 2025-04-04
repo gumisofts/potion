@@ -1,1 +1,6 @@
-# Add application tasks over here
+from tasks_handler.celery import app
+
+
+@app.tasks
+def handle_transaction():
+    pass
