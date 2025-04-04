@@ -42,6 +42,7 @@ jobs:
           echo "AWS_STORAGE_BUCKET_NAME=${{vars.AWS_STORAGE_BUCKET_NAME}}" >> .env
           echo "STATIC_URL=${{vars.STATIC_URL}}" >> .env
           echo "ALLOWED_HOSTS=${{vars.ALLOWED_HOSTS}}" >> .env
+          echo "CORS_ALLOWED_ORIGINS=${{vars.CORS_ALLOWED_ORIGINS}}" >> .env
       - name: Copy AWS Credentials
         run: | 
             cd ~/
