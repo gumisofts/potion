@@ -59,7 +59,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         except ValidationError as e:
             raise ValidationError({"password": e})
 
-        return attrs
+        return super().validate(attrs)
 
     def create(self, validated_data):
         password = validated_data.get("password")
@@ -121,6 +121,8 @@ class UserLoginSerializer(serializers.Serializer):
     def validate(self, attrs):
         password = attrs.pop("password")
         phone_number = attrs.pop("phone_number")
+
+        phone_number = User.normalize_phone_number(phone_number)
 
         user = authenticate(phone_number=phone_number, password=password)
         if not user:

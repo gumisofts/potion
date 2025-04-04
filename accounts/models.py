@@ -11,14 +11,38 @@ from django.db.models import Manager
 from django.utils.translation import gettext_lazy as _
 
 from core.utils import hash256
+import re
 
+phone_regex = r"^(\+)?(?P<country_code>251)?(?P<phone_number>[79]\d{8})$"
 phone_validator = RegexValidator(
-    regex=r"^(7|9)\d{8}$",
-    message="Phone number must be 8-12 digits (e.g., 945678903).",
+    regex=phone_regex,
+    message="Phone number must start with +2519, 2519, 9, +2517, 2517, or 7 followed by 8 digits.",
 )
 
 
 class UserManager(BaseUserManager):
+    def create_user(
+        self,
+        phone_number,
+        first_name,
+        password,
+        last_name=None,
+        is_active=True,
+        is_superuser=False,
+        is_staff=False,
+        **kwargs,
+    ):
+        return self.create(
+            phone_number,
+            first_name,
+            password,
+            last_name,
+            is_active,
+            is_superuser,
+            is_staff,
+            **kwargs,
+        )
+
     def create(
         self,
         phone_number,
@@ -72,7 +96,7 @@ class UserManager(BaseUserManager):
 
 class User(AbstractUser):
     username = None
-    id = models.UUIDField(primary_key=True, default=uuid4)
+    id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     profile_pic_id = models.UUIDField(null=True, blank=True)
     phone_number = models.CharField(
         max_length=255,
@@ -93,8 +117,22 @@ class User(AbstractUser):
 
     objects = UserManager()
 
+    @staticmethod
+    def normalize_phone_number(phone_number):
+        match = re.search(phone_regex, phone_number)
+
+        if not match:
+            raise ValueError("Invalid phone number value")
+
+        return match.groupdict()["phone_number"]
+
     def __str__(self):
         return self.phone_number
+
+    def save(self, **kwrags):
+        self.phone_number = User.normalize_phone_number(self.phone_number)
+
+        return super().save(**kwrags)
 
 
 class EmailConfirmationToken(models.Model):
@@ -103,7 +141,7 @@ class EmailConfirmationToken(models.Model):
 
 
 class Business(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid4)
+    id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     logo_id = models.UUIDField(null=True, blank=True)
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="businesses")
     name = models.CharField(max_length=255)
@@ -113,7 +151,7 @@ class Business(models.Model):
     contact_email = models.EmailField(
         validators=[EmailValidator(message="Invalid email format.")]
     )
-    license_id = models.UUIDField(max_length=255)
+    license_id = models.UUIDField(max_length=255, null=True, blank=True)
     is_active = models.BooleanField(default=True)
     is_verified = models.BooleanField(default=False)
     trust_level = models.CharField(
@@ -129,7 +167,7 @@ class Business(models.Model):
 
 
 class Service(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid4)
+    id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     business = models.ForeignKey(
         Business, on_delete=models.CASCADE, related_name="services"
     )
@@ -144,6 +182,7 @@ class Service(models.Model):
 
 
 class VerificationCode(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     token = models.CharField(max_length=255)
     expires_at = models.DateTimeField()
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="codes")
