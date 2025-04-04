@@ -1,3 +1,4 @@
+import re
 from uuid import uuid4
 
 from django.contrib.auth.models import AbstractUser, BaseUserManager
@@ -11,7 +12,6 @@ from django.db.models import Manager
 from django.utils.translation import gettext_lazy as _
 
 from core.utils import hash256
-import re
 
 phone_regex = r"^(\+)?(?P<country_code>251)?(?P<phone_number>[79]\d{8})$"
 phone_validator = RegexValidator(
