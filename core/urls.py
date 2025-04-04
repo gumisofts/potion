@@ -23,5 +23,6 @@ urlpatterns = [
     path("files/", include("files.urls")),
     path("accounts/", include("accounts.urls")),
     path("wallets/", include("wallets.urls")),
+    path("apis/", include("apis.urls")),
     path("subscriptions/", include("subscriptions.urls")),
 ]
