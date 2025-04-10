@@ -6,12 +6,11 @@ from wallets.models import Wallet
 from wallets.serializers import *
 
 
-class WalletViewsets(RetrieveModelMixin, GenericViewSet):
+class WalletViewsets(RetrieveModelMixin, ListModelMixin, GenericViewSet):
     serializer_class = WalletSerializers
     queryset = Wallet.objects.filter(is_restricted=False)
-
-    def get_queryset(self):
-        return super().get_queryset()
+    permission_classes = []
+    lookup_field = "user__id"
 
 
 class TransactionViewsets(ListModelMixin, RetrieveModelMixin, GenericViewSet):

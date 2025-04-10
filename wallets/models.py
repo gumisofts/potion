@@ -49,16 +49,17 @@ class Wallet(models.Model):
 
 class Transaction(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid4)
-    wallet = models.ForeignKey(
+    from_wallet = models.ForeignKey(
         Wallet, on_delete=models.CASCADE, related_name="transactions"
     )
-    type = models.CharField(
-        max_length=10, choices=[("credit", "Credit"), ("debit", "Debit")]
+    to_wallet = models.ForeignKey(
+        Wallet, on_delete=models.CASCADE, null=True, blank=True
     )
     amount = models.BigIntegerField(
         validators=[MinValueValidator(1, message="Amount must be at least 1.")]
     )
-    notes = models.TextField(null=True, blank=True)
+
+    remarks = models.TextField(null=True, blank=True)
     status = models.CharField(
         max_length=10,
         choices=[

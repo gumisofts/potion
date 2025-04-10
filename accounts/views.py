@@ -29,6 +29,7 @@ class LoginViewset(GenericViewSet, CreateModelMixin):
 class RegisterViewset(GenericViewSet, CreateModelMixin):
     serializer_class = RegisterSerializer
     queryset = User.objects.all()
+    permission_classes = []
 
 
 class UsersViewset(ListModelMixin, RetrieveModelMixin, GenericViewSet):
