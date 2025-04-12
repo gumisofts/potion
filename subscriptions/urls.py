@@ -5,8 +5,9 @@ from subscriptions.views import *
 
 router = DefaultRouter()
 
+router.register("subscribe_service", SubscribeViewsets, basename="subscribe-service")
 router.register(
-    "service_subscriptions", SubscribeViewset, basename="service-subscriptions"
+    "unsubscribe_service", UnSubscribeViewsets, basename="unsubscribe-service"
 )
 router.register("subscriptions", SubscriptionViewset, basename="subscriptions")
 

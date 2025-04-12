@@ -4,18 +4,21 @@ from rest_framework.serializers import ModelSerializer
 from subscriptions.models import *
 
 
-class UserSubscriptionSerializer(ModelSerializer):
+class UserSubscriptionSerializer(serializers.Serializer):
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
     is_active = serializers.BooleanField(read_only=True)
-
-    class Meta:
-        model = UserSubscription
-        exclude = []
+    subscription = serializers.PrimaryKeyRelatedField(
+        queryset=Subscription.objects.filter(is_active=True)
+    )
 
     def create(self, validated_data):
-        manager = SubscriptionManager()
 
-        return manager.subscribe(**validated_data)
+        return UserSubscription.objects.subscribe(**validated_data)
+
+
+class UnsubscribeSerializer(UserSubscriptionSerializer):
+    def create(self, validated_data):
+        return UserSubscription.objects.unsubscribe(**validated_data)
 
 
 class SubscriptionSerializer(ModelSerializer):

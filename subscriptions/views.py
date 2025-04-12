@@ -9,7 +9,7 @@ from subscriptions.serializers import *
 # Create your views here.
 
 
-class SubscribeViewset(CreateModelMixin, ListModelMixin, GenericViewSet):
+class SubscribeViewsets(CreateModelMixin, ListModelMixin, GenericViewSet):
     serializer_class = UserSubscriptionSerializer
     queryset = UserSubscription.objects.filter(is_active=True)
 
@@ -18,6 +18,23 @@ class SubscribeViewset(CreateModelMixin, ListModelMixin, GenericViewSet):
     def get_queryset(self):
         queryset = self.queryset.filter(user=self.request.user)
         return queryset
+
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
+
+class UnSubscribeViewsets(CreateModelMixin, ListModelMixin, GenericViewSet):
+    serializer_class = UnsubscribeSerializer
+    queryset = UserSubscription.objects.filter(is_active=False)
+
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        queryset = self.queryset.filter(user=self.request.user)
+        return queryset
+
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
 
 
 class SubscriptionViewset(ModelViewSet):

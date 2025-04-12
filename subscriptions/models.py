@@ -10,15 +10,15 @@ User = get_user_model()
 
 
 class Subscription(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid4)
+    id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     name = models.CharField(max_length=255)
     service = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="subscriptions"
+        "accounts.Service", on_delete=models.CASCADE, related_name="subscriptions"
     )
     frequency = models.BigIntegerField()
     fixed_price = models.BigIntegerField(null=True, blank=True)
-    has_fixed_price = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
+    has_fixed_price = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.name} ({self.service.name})"
@@ -26,27 +26,27 @@ class Subscription(models.Model):
 
 class SubscriptionManager(Manager):
 
-    def subscribe(self, user, subscription):
-        sub = self.get_or_create(user=user, subscription=subscription)
+    def subscribe(self, user, subscription, **kwargs):
+        sub, created = self.get_or_create(user=user, subscription=subscription)
         sub.is_active = True
         sub.save()
 
-        subscribed.send(self.__class__, user, subscription)
+        subscribed.send({"user": user, "subscription": subscription})
 
         return sub
 
-    def unsubscribe(self, user, subscription):
-        sub = self.get_or_create(user=user, subscription=subscription)
+    def unsubscribe(self, user, subscription, **kwargs):
+        sub, created = self.get_or_create(user=user, subscription=subscription)
         sub.is_active = False
         sub.save()
-        unsubscribed.send(self.__class__, user, subscription)
+        unsubscribed.send({"user": user, "subscription": subscription})
         return sub
 
 
 class UserSubscription(models.Model):
+    id = models.UUIDField(default=uuid4, editable=False, primary_key=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     subscription = models.ForeignKey(Subscription, on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

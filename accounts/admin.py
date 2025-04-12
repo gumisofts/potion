@@ -22,13 +22,30 @@ class TempraryCodeAdmin(admin.ModelAdmin):
             return user.id
 
 
+class BusinnesAdmin(admin.ModelAdmin):
+    list_display = [
+        "id",
+        "name",
+        "contact_phone",
+        "contact_email",
+        "is_active",
+        "is_verified",
+    ]
+    list_filter = ["is_verified"]
+
+
+class ServiceAdmin(admin.ModelAdmin):
+    list_display = ["id", "name", "is_active", "business"]
+    list_filter = ["business__id"]
+
+
 class VerificationCodeAdmin(admin.ModelAdmin):
     list_display = ["code_type", "user", "is_used", "expires_at"]
 
 
 admin.site.register(User, UserAdmin)
-admin.site.register(Business)
-admin.site.register(Service)
+admin.site.register(Business, BusinnesAdmin)
+admin.site.register(Service, ServiceAdmin)
 admin.site.register(EmailConfirmationToken)
 admin.site.register(TemporaryCode, TempraryCodeAdmin)
 admin.site.register(VerificationCode, VerificationCodeAdmin)
