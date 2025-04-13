@@ -24,6 +24,7 @@ def update_wallet_balance(sender, instance, **kwargs):
 
         recipient_email = None
         # TODO send notifications
+
         # if instance.wallet.user:
         #     recipient_email = instance.wallet.user.email
         # else:

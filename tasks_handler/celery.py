@@ -16,3 +16,5 @@ app.conf.update(
     timezone="Africa/Addis_Ababa",
     enable_utc=True,
 )
+
+app.autodiscover_tasks()

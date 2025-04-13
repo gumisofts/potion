@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt",
     "drf_spectacular",
     "drf_spectacular_sidecar",
+    "django_celery_beat",
     "apis",
     "files",
     "accounts",
@@ -206,3 +207,6 @@ SPECTACULAR_SETTINGS = {
         },
     ],
 }
+
+
+CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"

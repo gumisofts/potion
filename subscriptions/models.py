@@ -20,6 +20,9 @@ class Subscription(models.Model):
     is_active = models.BooleanField(default=True)
     has_fixed_price = models.BooleanField(default=False)
 
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
     def __str__(self):
         return f"{self.name} ({self.service.name})"
 
@@ -50,6 +53,7 @@ class UserSubscription(models.Model):
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    next_billing_date = models.DateTimeField(blank=True, null=True)
 
     objects = SubscriptionManager()
 
