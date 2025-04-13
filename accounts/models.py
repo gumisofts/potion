@@ -201,3 +201,9 @@ class TemporaryCode(models.Model):
     phone_number = models.CharField(max_length=255)
     code = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
+
+
+class UserDevice(models.Model):
+    device_id = models.CharField(max_length=255)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="devices")
+    is_last_time_used_device = models.BooleanField(default=False)

@@ -25,24 +25,6 @@ class Wallet(models.Model):
     def __str__(self):
         return f"Wallet ({self.user.email if self.user else 'Business'})"
 
-    # @transaction.atomic
-    # def update_balance(self, amount, transaction_type):
-    #     """
-    #     Safely updates the wallet balance using row-level locking.
-    #     """
-    #     wallet = Wallet.objects.select_for_update().get(id=self.id)
-
-    #     if transaction_type == "credit":
-    #         wallet.balance += amount
-    #     elif transaction_type == "debit":
-    #         if wallet.balance < amount:
-    #             raise ValueError("Insufficient balance for debit transaction.")
-    #         wallet.balance -= amount
-    #     else:
-    #         raise ValueError("Invalid transaction type.")
-
-    #     wallet.save()
-
     def __str__(self):
         return f"Wallet({self.user})"
 
@@ -73,12 +55,3 @@ class Transaction(models.Model):
 
     def __str__(self):
         return f"{self.type} of {self.amount} (Status: {self.status})"
-
-    # def save(self, *args, **kwargs):
-    #     """
-    #     Override save method to update wallet balance safely.
-    #     """
-    #     if self.status == "completed":
-    #         with transaction.atomic():
-    #             self.wallet.update_balance(self.amount, self.type)
-    #     super().save(*args, **kwargs)

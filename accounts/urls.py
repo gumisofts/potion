@@ -8,6 +8,7 @@ from .views import *
 router = DefaultRouter()
 
 router.register("register", RegisterViewset, basename="register")
+router.register("user_devices", UserDeviceViewset, basename="user-devices")
 router.register(
     "verifications/confirm", VerificationCodeViewset, basename="users-confirm-code"
 )

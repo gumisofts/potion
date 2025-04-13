@@ -191,3 +191,11 @@ class BusinessServiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Service
         exclude = []
+
+
+class UserDeviceSerializer(serializers.ModelSerializer):
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+
+    class Meta:
+        model = UserDevice
+        exclude = ["is_last_time_used_device"]

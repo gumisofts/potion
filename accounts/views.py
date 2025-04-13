@@ -61,3 +61,11 @@ class BusinessServiceViewset(
     serializer_class = BusinessServiceSerializer
     queryset = Service.objects.filter(is_active=True)
     permission_classes = [BusinnessItemPermission]
+
+
+class UserDeviceViewset(
+    CreateModelMixin, RetrieveModelMixin, ListModelMixin, GenericViewSet
+):
+    serializer_class = UserDeviceSerializer
+    permission_classes = [IsAuthenticated]
+    queryset = UserDevice.objects.filter()

@@ -66,22 +66,6 @@ class UsersViewsetTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
-# class VerificationCodeViewsetTests(APITestCase):
-#     def test_create_verification_code(self):
-#         url = reverse("users-confirm-code-list")
-#         data = {"email": "test@example.com"}
-#         response = self.client.post(url, data)
-#         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-
-# class VerificationCodeResendViewsetTests(APITestCase):
-#     def test_resend_verification_code(self):
-#         url = reverse("users-resend-code-list")
-#         data = {"email": "test@example.com"}
-#         response = self.client.post(url, data)
-#         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-
 class BusinessViewsetTests(APITestCase):
     def setUp(self):
         self.user = User.objects.create_user(
