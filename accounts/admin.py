@@ -5,6 +5,7 @@ from .models import *
 
 class UserAdmin(admin.ModelAdmin):
     list_display = [
+        "id",
         "phone_number",
         "first_name",
         "last_name",

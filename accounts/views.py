@@ -1,6 +1,13 @@
 from datetime import datetime
 
 from django.shortcuts import get_object_or_404, render
+from drf_spectacular.utils import (
+    OpenApiExample,
+    OpenApiParameter,
+    OpenApiTypes,
+    extend_schema,
+    extend_schema_view,
+)
 from rest_framework import status
 from rest_framework.mixins import (
     CreateModelMixin,
@@ -54,6 +61,29 @@ class BusinessViewset(
     queryset = Business.objects.all()
     permission_classes = [IsAuthenticated]
 
+    def get_queryset(self):
+        user_id = self.request.GET.get("user_id")
+
+        queryset = self.queryset
+
+        if user_id:
+            queryset = queryset.filter(owner=user_id)
+
+        return queryset
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="user_id",
+                type=OpenApiTypes.UUID,
+                required=False,
+                location=OpenApiParameter.QUERY,
+            )
+        ]
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
 
 class BusinessServiceViewset(
     CreateModelMixin, RetrieveModelMixin, ListModelMixin, GenericViewSet
@@ -61,6 +91,28 @@ class BusinessServiceViewset(
     serializer_class = BusinessServiceSerializer
     queryset = Service.objects.filter(is_active=True)
     permission_classes = [BusinnessItemPermission]
+
+    def get_queryset(self):
+        queryset = self.queryset
+
+        business_id = self.request.GET.get("business_id")
+
+        if business_id:
+            queryset = queryset.filter(business=business_id)
+        return queryset
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="bussines_id",
+                type=OpenApiTypes.UUID,
+                required=False,
+                location=OpenApiParameter.QUERY,
+            )
+        ]
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
 
 
 class UserDeviceViewset(
