@@ -89,7 +89,7 @@ class BusinessServiceViewset(
     CreateModelMixin, RetrieveModelMixin, ListModelMixin, GenericViewSet
 ):
     serializer_class = BusinessServiceSerializer
-    queryset = Service.objects.filter(is_active=True)
+    queryset = Service.objects.all()
     permission_classes = [BusinnessItemPermission]
 
     def get_queryset(self):
@@ -97,6 +97,10 @@ class BusinessServiceViewset(
 
         business_id = self.request.GET.get("business_id")
         categories = self.request.GET.get("categories")
+
+        is_active = self.request.GET.get("is_active")
+        if is_active:
+            queryset = queryset.filter(is_active=is_active)
 
         if categories:
             categories = categories.split(",")
@@ -113,7 +117,25 @@ class BusinessServiceViewset(
                 type=OpenApiTypes.UUID,
                 required=False,
                 location=OpenApiParameter.QUERY,
-            )
+            ),
+            OpenApiParameter(
+                name="name",
+                type=OpenApiTypes.STR,
+                required=False,
+                location=OpenApiParameter.QUERY,
+            ),
+            OpenApiParameter(
+                name="is_active",
+                type=OpenApiTypes.STR,
+                required=False,
+                location=OpenApiParameter.QUERY,
+            ),
+            OpenApiParameter(
+                name="categories",
+                type=OpenApiTypes.STR,
+                required=False,
+                location=OpenApiParameter.QUERY,
+            ),
         ]
     )
     def list(self, request, *args, **kwargs):

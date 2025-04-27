@@ -2,7 +2,8 @@ from django.shortcuts import render
 from rest_framework.mixins import CreateModelMixin, ListModelMixin
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
-
+from drf_spectacular.utils import extend_schema, OpenApiParameter
+from drf_spectacular.types import OpenApiTypes
 from subscriptions.models import *
 from subscriptions.serializers import *
 
@@ -11,7 +12,7 @@ from subscriptions.serializers import *
 
 class SubscribeViewsets(CreateModelMixin, ListModelMixin, GenericViewSet):
     serializer_class = UserSubscriptionSerializer
-    queryset = UserSubscription.objects.filter(is_active=True)
+    queryset = UserSubscription.objects.all()
 
     permission_classes = [IsAuthenticated]
 
@@ -19,6 +20,22 @@ class SubscribeViewsets(CreateModelMixin, ListModelMixin, GenericViewSet):
         queryset = self.queryset.filter(user=self.request.user)
         return queryset
 
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="subscription_id",
+                type=OpenApiTypes.INT,
+                description="Subscription ID",
+                required=False,
+            ),
+            OpenApiParameter(
+                name="next_billing_date_gt",
+                type=OpenApiTypes.DATETIME,
+                description="next billing date greater than",
+                required=False,
+            ),
+        ],
+    )
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
 
