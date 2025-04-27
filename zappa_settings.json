@@ -12,6 +12,22 @@
         "profile_name": "potion",
         "project_name": "potion",
         "runtime": "python3.12",
+        "s3_bucket": "potion-v01",
+        "slim_handler": true
+    },
+    "pro": {
+        "aws_region": "eu-north-1",
+        "django_settings": "core.settings",
+        "exclude": [
+            "boto3",
+            "dateutil",
+            "botocore",
+            "s3transfer",
+            "concurrent"
+        ],
+        "profile_name": "potion",
+        "project_name": "potion",
+        "runtime": "python3.12",
         "s3_bucket": "potion-v01"
     }
 }
