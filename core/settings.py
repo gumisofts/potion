@@ -173,7 +173,7 @@ SPECTACULAR_SETTINGS = {
     "REDOC_DIST": "SIDECAR",
     "SERVERS": [
         {
-            "url": "https://potin.gumisofts.com/v01",
+            "url": "https://potion.gumisofts.com/",
             "description": "V01 Production Server",
         },
         {
