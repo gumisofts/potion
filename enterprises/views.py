@@ -1,6 +1,7 @@
+from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
-from drf_spectacular.utils import extend_schema, OpenApiParameter, extend_schema_view
+
 from .models import Enterprise
 from .serializers import *
 
