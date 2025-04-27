@@ -96,6 +96,11 @@ class BusinessServiceViewset(
         queryset = self.queryset
 
         business_id = self.request.GET.get("business_id")
+        categories = self.request.GET.get("categories")
+
+        if categories:
+            categories = categories.split(",")
+            queryset = queryset.filter(categories__in=categories)
 
         if business_id:
             queryset = queryset.filter(business=business_id)
@@ -121,3 +126,8 @@ class UserDeviceViewset(
     serializer_class = UserDeviceSerializer
     permission_classes = [IsAuthenticated]
     queryset = UserDevice.objects.filter()
+
+
+class CategoriesViewset(ListModelMixin, GenericViewSet):
+    serializer_class = CategoriesSerializer
+    queryset = Category.objects.all()

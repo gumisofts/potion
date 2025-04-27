@@ -1,42 +1,58 @@
 import mimetypes
-import urllib.parse
 from uuid import uuid4
 
 import boto3
+import boto3.exceptions
 from botocore.config import Config
 from django.conf import settings
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
-from rest_framework.serializers import FileField, ModelSerializer
 
-from .models import FileModel
+from files.models import *
+
+s3 = boto3.client("s3")
 
 
-class FileDownloadSerializer(serializers.Serializer):
-    message = serializers.CharField(default="File retrieved successfully")
-    file_url = serializers.SerializerMethodField()
-    optimized_image_url = serializers.SerializerMethodField()
-    thumbnail_url = serializers.SerializerMethodField()
-    alt_text = serializers.CharField(required=False)
-    error = serializers.CharField(required=False)
+def get_object_metadata(object_key, bucket_name=settings.AWS_STORAGE_BUCKET_NAME):
 
-    def get_file_url(self, obj):
-        """Returns the original file URL"""
-        if hasattr(obj, "file") and obj.file:
-            return obj.file.url  # Original file
-        return None
+    try:
+        response = s3.head_object(Bucket=bucket_name, Key=object_key)
+        metadata = {
+            "content_length": response["ContentLength"],  # File size in bytes
+            "content_type": response["ContentType"],  # MIME type
+            "last_modified": response["LastModified"],  # Last modified timestamp
+            "etag": response["ETag"],  # MD5 checksum (quoted)
+            "meta_data": response.get("Metadata", {}),  # Custom metadata (x-amz-meta-*)
+        }
+        return metadata
+    except:
+        return
 
-    def get_optimized_image_url(self, obj):
-        """Returns the optimized image URL if available"""
-        if hasattr(obj, "optimized_image") and obj.optimized_image:
-            return obj.optimized_image.url  # Optimized version
-        return None
 
-    def get_thumbnail_url(self, obj):
-        """Returns the thumbnail URL if available"""
-        if hasattr(obj, "thumbnail") and obj.thumbnail:
-            return obj.thumbnail.url  # Thumbnail version
-        return None
+class FileMetaSerializer(serializers.ModelSerializer):
+    content_length = serializers.IntegerField(read_only=True)
+    content_type = serializers.CharField(read_only=True)
+    last_modified = serializers.DateTimeField(read_only=True)
+    meta_data = serializers.JSONField(read_only=True)
+
+    class Meta:
+        model = FileMeta
+        exclude = ["public_url"]
+
+    def validate(self, attrs):
+        attrs = super().validate(attrs)
+        key = attrs.get("key")
+        meta_data = get_object_metadata(key)
+
+        if not meta_data:
+            raise ValidationError({"key": ["invalid key"]})
+
+        meta_data = {**meta_data, **attrs}
+
+        return meta_data
+
+    def create(self, validated_data):
+        return super().create({"key": validated_data.get("key")})
 
 
 class SignedURLSerializer(serializers.Serializer):
@@ -57,14 +73,6 @@ class SignedURLSerializer(serializers.Serializer):
 
     id = serializers.CharField(read_only=True)
     signed_url = serializers.CharField(read_only=True)
-
-    def validate(self, attrs):
-
-        attrs = super().validate(attrs)
-        if attrs.get("ext") not in [s[0] for s in self.extension_choices]:
-            raise ValidationError({"ext": "unsupported extension"})
-
-        return attrs
 
     def create(self, validated_data):
         s3_client = boto3.client(
@@ -103,29 +111,3 @@ class SignedURLSerializer(serializers.Serializer):
         """
         mime_type, _ = mimetypes.guess_type(file_path)
         return mime_type or "application/octet-stream"
-
-
-class FileUploadSerializer(ModelSerializer):
-    file = FileField()
-
-    class Meta:
-        model = FileModel
-        fields = ["file", "alt_text"]
-        read_only_fields = ["stored_as"]
-
-
-class FileMetadataSerializer(serializers.Serializer):
-    file_name = serializers.CharField()
-    file_size = serializers.IntegerField()
-    alt_text = serializers.CharField(required=False, allow_blank=True)
-
-
-class FileSerializer(serializers.ModelSerializer):
-    class Meta:
-        exclude = []
-        model = FileModel
-
-
-class SignedUrlSerializer(serializers.Serializer):
-    signed_url = serializers.CharField()
-    file_name = serializers.CharField()

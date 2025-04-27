@@ -199,3 +199,9 @@ class UserDeviceSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserDevice
         exclude = ["is_last_time_used_device"]
+
+
+class CategoriesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        exclude = []

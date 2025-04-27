@@ -44,8 +44,12 @@ class VerificationCodeAdmin(admin.ModelAdmin):
     list_display = ["code_type", "user", "is_used", "expires_at"]
 
 
+class UserDeviceAdmin(admin.ModelAdmin):
+    list_display = ["label", "id"]
+
+
 admin.site.register(User, UserAdmin)
-admin.site.register(Business, BusinnesAdmin)
+admin.site.register(UserDevice, UserDeviceAdmin)
 admin.site.register(Service, ServiceAdmin)
 admin.site.register(EmailConfirmationToken)
 admin.site.register(TemporaryCode, TempraryCodeAdmin)

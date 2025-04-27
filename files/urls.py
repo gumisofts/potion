@@ -5,8 +5,7 @@ from .views import *
 
 router = routers.DefaultRouter()
 
-router.register("signed_url", SignUrlViewset, basename="signed-url")
+router.register(r"upload/signed_url", SignUrlViewset, basename="signed-url")
+router.register(r"file_metas", FileMetaDataViewset, basename="file-meta")
 
-urlpatterns = router.urls + [
-    # path("download/<str:stored_as>/", FileDownloadView.as_view(), name="file-download"),
-]
+urlpatterns = router.urls

@@ -176,6 +176,7 @@ class Service(models.Model):
         max_length=20, choices=[("basic", "Basic"), ("premium", "Premium")]
     )
     is_active = models.BooleanField(default=True)
+    categories = models.ManyToManyField("Category", related_name="services", blank=True)
 
     def __str__(self):
         return f"{self.name} ({self.service_type})"
@@ -204,6 +205,13 @@ class TemporaryCode(models.Model):
 
 
 class UserDevice(models.Model):
-    device_id = models.CharField(max_length=255)
+    id = models.CharField(max_length=255, primary_key=True, unique=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="devices")
+    label = models.CharField(max_length=255, null=True, blank=True)
     is_last_time_used_device = models.BooleanField(default=False)
+
+
+class Category(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
+    image_id = models.UUIDField(null=True, blank=True)
+    name = models.CharField(max_length=255)

@@ -1,42 +1,49 @@
 from io import BytesIO
 
+from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.urls import reverse
 from PIL import Image
 from rest_framework import status
-from rest_framework.test import APITestCase
+from rest_framework.test import APIClient, APITestCase
 
-from .models import FileModel
+User = get_user_model()
 
 
-class FileUploadDownloadTests(APITestCase):
+class SignUrlViewsetTest(APITestCase):
 
     def setUp(self):
-        """Set up the test with an image file."""
-        # self.upload_url = reverse("file-upload-list")  # Update this if needed
-        # self.download_url_template = reverse('file-download', kwargs={'stored_as': 'test_stored_as'})  # Placeholder
-
-        def generate_test_image():
-            """Generate a simple in-memory image for testing"""
-            image = Image.new("RGB", (100, 100), color=(255, 0, 0))
-            image_io = BytesIO()
-            image.save(image_io, format="JPEG")
-            image_io.seek(0)
-            return image_io
-
-        self.sample_file = SimpleUploadedFile(
-            "test_image.jpg", generate_test_image().read(), content_type="image/jpeg"
+        self.user = User.objects.create_user(
+            first_name="testuser", phone_number="912345678", password="testpass123"
         )
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.user)
+        self.url = reverse("signed-url-list")
 
-    # def test_upload_file(self):
-    #     """Test that a file can be uploaded successfully."""
-    #     data = {"file": self.sample_file, "alt_text": "Test Image Alt Text"}
+    def test_successful_signed_url_request(self):
+        payload = {"hash": "examplehash", "size": 500, "ext": "jpg"}
+        response = self.client.post(self.url, payload, format="json")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertIn("id", response.data)
+        self.assertIn("signed_url", response.data)
 
-    #     response = self.client.post(self.upload_url, data, format="multipart")
+    def test_invalid_extension_request(self):
+        payload = {"hash": "examplehash", "size": 500, "ext": "exe"}
+        response = self.client.post(self.url, payload, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("ext", response.data)
 
-    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
-    #     self.assertIn("stored_as", response.data)  # Ensure stored_as is in response
+    def test_missing_fields_request(self):
+        payload = {
+            "hash": "examplehash",
+        }
+        response = self.client.post(self.url, payload, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("size", response.data)
+        self.assertIn("ext", response.data)
 
-    #     # Check that the file was actually stored in the database
-    #     stored_as = response.data["stored_as"]
-    #     self.assertTrue(FileModel.objects.filter(stored_as=stored_as).exists())
+    def test_unauthenticated_request(self):
+        self.client.logout()
+        payload = {"hash": "examplehash", "size": 500, "ext": "jpg"}
+        response = self.client.post(self.url, payload, format="json")
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
