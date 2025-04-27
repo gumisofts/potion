@@ -38,7 +38,7 @@ jobs:
           echo "EMAIL_HOST_USER=${{ vars.EMAIL_HOST_USER }}" >> .env
           echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> .env
           echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> .env
-          echo "AWS_DEFAULT_REGION=${{secrets.AWS_S3_REGION_NAME}}" >> .env
+          echo "AWS_DEFAULT_REGION=${{vars.AWS_S3_REGION_NAME}}" >> .env
           echo "AWS_STORAGE_BUCKET_NAME=${{vars.AWS_STORAGE_BUCKET_NAME}}" >> .env
           echo "STATIC_URL=${{vars.STATIC_URL}}" >> .env
           echo "ALLOWED_HOSTS=${{vars.ALLOWED_HOSTS}}" >> .env
