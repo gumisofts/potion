@@ -8,3 +8,9 @@ class EnterpriseSerializer(ModelSerializer):
     class Meta:
         exclude = []
         model = Enterprise
+
+
+class UserGrantSerializer(ModelSerializer):
+    class Meta:
+        exclude = []
+        model = UserGrant
