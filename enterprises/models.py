@@ -1,7 +1,7 @@
+from django.contrib.auth.models import Permission
 from django.db import models
 
 from core.models import BaseModel
-from django.contrib.auth.models import Permission
 
 
 class Enterprise(BaseModel):
