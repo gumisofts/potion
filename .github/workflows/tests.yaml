@@ -1,11 +1,6 @@
 name: Django Tests
 
 on:
-  push:
-    branches: ["main", "dev-v01", "v01"]
-  pull_request:
-    branches: ["main", "dev-v01", "v01"]
-on:
   workflow_run:
     workflows: ["Code Quality Check"]
     branches: ["main", "dev-v01", "v01"]
