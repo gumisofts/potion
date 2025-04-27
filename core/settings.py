@@ -173,20 +173,16 @@ SPECTACULAR_SETTINGS = {
     "REDOC_DIST": "SIDECAR",
     "SERVERS": [
         {
-            "url": "https://potion.gumisofts.com/",
+            "url": "https://potion.dev.gumisofts.com",
+            "description": "Active Development Server",
+        },
+        {
+            "url": "https://potion.v01.gumisofts.com",
             "description": "V01 Production Server",
         },
         {
             "url": "http://localhost:8000",
             "description": "Local Development Server",
-        },
-        {
-            "url": "https://zee8vkyn8l.execute-api.eu-north-1.amazonaws.com/dev",
-            "description": "Active Development Server",
-        },
-        {
-            "url": "https://zee8vkyn8l.execute-api.eu-north-1.amazonaws.com/v01",
-            "description": "Alias of V01 Production Server",
         },
     ],
 }
