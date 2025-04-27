@@ -5,7 +5,12 @@ on:
     branches: ["main", "dev-v01", "v01"]
   pull_request:
     branches: ["main", "dev-v01", "v01"]
-
+on:
+  workflow_run:
+    workflows: ["Code Quality Check"]
+    branches: ["main", "dev-v01", "v01"]
+    types:
+      - completed
 env:
   SECRET_KEY: y)tb02r69qx3&qpw(!tgp800x)3l(q+(!fm$yv%gxwy0o_npd7
   PG_DB_NAME: temp_db
@@ -19,8 +24,8 @@ env:
   EMAIL_HOST_USER: temp@gumisofts.com
   EMAIL_PORT: 123
 jobs:
-  test:
-    name: Run Django Tests
+  on_success:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     services:
       pg:
@@ -41,15 +46,15 @@ jobs:
     strategy:
       matrix:
         python-version: ["3.10", "3.11", "3.12"]
-
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v3
         with:
           python-version: ${{ matrix.python-version }}
+          cache: "pip"
       - name: Copy Environment Variables and Secrets
-        run: | 
+        run: |
           echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> .env
           echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> .env
           echo "AWS_DEFAULT_REGION=${{vars.AWS_S3_REGION_NAME}}" >> .env
