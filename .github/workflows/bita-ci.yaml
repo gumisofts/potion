@@ -4,6 +4,16 @@ name: Bita CI/CD
 # It will also deploy the documentation to GitHub Pages.
 # It will run the tests on Python 3.10, 3.11, and 3.12.
 # It will also run code quality checks using Black, Flake8, and isort.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
+# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
 
 on:
   push:
