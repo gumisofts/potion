@@ -13,7 +13,7 @@ permissions:
 # However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
 concurrency:
   group: "pages"
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 on:
   push:
@@ -210,7 +210,7 @@ jobs:
       - name: Deploy with Zappa
         run: |
           source env/bin/activate
-          zappa deploy dev || zappa update dev
+          zappa deploy pro || zappa update pro
   deploy_docs:
     environment:
       name: github-pages
