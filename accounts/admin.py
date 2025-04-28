@@ -48,9 +48,28 @@ class UserDeviceAdmin(admin.ModelAdmin):
     list_display = ["label", "id"]
 
 
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ["id", "name", "is_active"]
+
+
+class BusinessAdmin(admin.ModelAdmin):
+    list_display = [
+        "id",
+        "name",
+        "contact_phone",
+        "contact_email",
+        "is_active",
+        "is_verified",
+        "owner",
+    ]
+    list_filter = ["is_verified"]
+
+
 admin.site.register(User, UserAdmin)
 admin.site.register(UserDevice, UserDeviceAdmin)
+admin.site.register(Business, BusinessAdmin)
 admin.site.register(Service, ServiceAdmin)
 admin.site.register(EmailConfirmationToken)
 admin.site.register(TemporaryCode, TempraryCodeAdmin)
 admin.site.register(VerificationCode, VerificationCodeAdmin)
+admin.site.register(Category, CategoryAdmin)

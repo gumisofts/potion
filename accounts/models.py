@@ -215,3 +215,4 @@ class Category(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     image_id = models.UUIDField(null=True, blank=True)
     name = models.CharField(max_length=255)
+    is_active = models.BooleanField(default=True)
