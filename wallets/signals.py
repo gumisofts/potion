@@ -4,6 +4,8 @@ from django.core.mail import send_mail
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
+from notifications.models import Notification
+
 from .models import Transaction
 
 logger = logging.getLogger(__name__)
@@ -23,6 +25,19 @@ def update_wallet_balance(sender, instance, **kwargs):
             instance.save()
 
         recipient_email = None
+
+        Notification.objects.create(
+            title="Transaction Completed",
+            content=f"Transfer of amount {instance.amount} ETB has been completed",
+            user=instance.from_wallet.user,
+        )
+        Notification.objects.create(
+            title="Transaction Completed",
+            content=f"You have received {instance.amount} ETB from {instance.from_wallet.user.phone_number}",
+            user=instance.to_wallet.user,
+            deliver_method="push",
+        )
+
         # TODO send notifications
 
         # if instance.wallet.user:
