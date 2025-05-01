@@ -20,6 +20,6 @@ class NotificationViewset(ListModelMixin, GenericViewSet):
         user = self.request.user
 
         if user:
-            queryset = queryset.filter(Q(groups__in=[user]) | Q(user=user))
+            queryset = queryset.filter(Q(groups__in=user.objects.all()) | Q(user=user))
 
         return queryset

@@ -6,6 +6,7 @@ from wallets.views import *
 router = DefaultRouter()
 
 router.register("wallets", WalletViewsets)
+router.register("transactions", Transaction, basename="transactions")
 router.register("send/p2p", SendMoneyP2PViewsets, basename="send-p2p")
 
 urlpatterns = router.urls + []
