@@ -54,4 +54,4 @@ class Transaction(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.type} of {self.amount} (Status: {self.status})"
+        return f"{self.amount} (Status: {self.status})"
