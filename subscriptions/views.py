@@ -60,4 +60,44 @@ class SubscriptionViewset(ModelViewSet):
     queryset = Subscription.objects.filter(is_active=True)
 
     def get_queryset(self):
-        return super().get_queryset()
+        queryset = super().get_queryset()
+
+        service_id = self.request.query_params.get("service_id")
+        business_id = self.request.query_params.get("business_id")
+        service_type = self.request.query_params.get("service_type")
+
+        if service_id:
+            queryset = queryset.filter(service=service_id)
+
+        if business_id:
+            queryset = queryset.filter(service__business=business_id)
+
+        if service_type:
+            queryset = queryset.filter(service_type=service_type)
+
+        return queryset
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="service_id",
+                required=False,
+                location=OpenApiParameter.QUERY,
+                type=OpenApiTypes.UUID,
+            ),
+            OpenApiParameter(
+                name="business_id",
+                required=False,
+                location=OpenApiParameter.QUERY,
+                type=OpenApiTypes.UUID,
+            ),
+            OpenApiParameter(
+                name="service_type",
+                required=False,
+                location=OpenApiParameter.QUERY,
+                type=OpenApiTypes.STR,
+            ),
+        ]
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
