@@ -21,6 +21,7 @@ urlpatterns = [
         name="redoc",
     ),
     path("files/", include("files.urls")),
+    path("notifications/", include("notifications.urls")),
     path("accounts/", include("accounts.urls")),
     path("wallets/", include("wallets.urls")),
     path("subscriptions/", include("subscriptions.urls")),
