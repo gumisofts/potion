@@ -196,7 +196,7 @@ GOOGLE_APPLICATION_CREDENTIALS = {
     "project_id": env("GOOGLE_APPLICATION_CREDENTIALS_PROJECT_ID"),
     "private_key_id": env("GOOGLE_APPLICATION_CREDENTIALS_PRIVATE_KEY_ID"),
     "private_key": "-----BEGIN PRIVATE KEY-----\n"
-    + "\n".join(env("GOOGLE_APPLICATION_CREDENTIALS_PRIVATE_KEY").split("\\n"))
+    + "\n".join(env("GOOGLE_APPLICATION_CREDENTIALS_PRIVATE_KEY", "").split("\\n"))
     + "\n-----END PRIVATE KEY-----\n",
     "client_email": env("GOOGLE_APPLICATION_CLIENT_EMAIL"),
     "client_id": env("GOOGLE_APPLICATION_CREDENTIALS_CLIENT_ID"),
