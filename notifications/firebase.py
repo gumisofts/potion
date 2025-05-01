@@ -1,6 +1,6 @@
 import firebase_admin
-from firebase_admin import credentials, messaging
 from django.conf import settings
+from firebase_admin import credentials, messaging
 
 # Path to your service account key file
 cred = credentials.Certificate(settings.GOOGLE_APPLICATION_CREDENTIALS)
