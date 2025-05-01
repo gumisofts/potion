@@ -2,8 +2,8 @@ import firebase_admin
 from firebase_admin import credentials, messaging
 
 # Path to your service account key file
-cred = credentials.Certificate("path/to/your/serviceAccountKey.json")
-firebase_admin.initialize_app(cred)
+# cred = credentials.Certificate("path/to/your/serviceAccountKey.json")
+firebase_admin.initialize_app()
 
 # Device token you want to send the notification to
 
@@ -29,6 +29,7 @@ def send_notification(fcm_token, title, body, data=None):
         response = messaging.send(message)
         # Check if the token is valid
     except Exception as e:
+        print(e)
         return False
 
     # Send the message
