@@ -1,9 +1,12 @@
 import firebase_admin
 from firebase_admin import credentials, messaging
+from django.conf import settings
 
 # Path to your service account key file
-# cred = credentials.Certificate("path/to/your/serviceAccountKey.json")
-firebase_admin.initialize_app()
+cred = credentials.Certificate(settings.GOOGLE_APPLICATION_CREDENTIALS)
+
+
+firebase_admin.initialize_app(cred)
 
 # Device token you want to send the notification to
 
