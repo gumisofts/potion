@@ -101,3 +101,9 @@ class SubscriptionViewset(ModelViewSet):
     )
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
+
+
+class UserSubscriptionViewset(ListModelMixin, GenericViewSet):
+    serializer_class = UserSubscriptionSerializer
+    queryset = UserSubscription.objects.all()
+    permission_classes = [IsAuthenticated]

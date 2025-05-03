@@ -9,6 +9,9 @@ router.register("subscribe_service", SubscribeViewsets, basename="subscribe-serv
 router.register(
     "unsubscribe_service", UnSubscribeViewsets, basename="unsubscribe-service"
 )
+router.register(
+    "user_subscriptions", UserSubscriptionViewset, basename="user-subscriptions"
+)
 router.register("subscriptions", SubscriptionViewset, basename="subscriptions")
 
 

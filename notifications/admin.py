@@ -1,3 +1,10 @@
 from django.contrib import admin
 
-# Register your models here.
+from .models import Notification
+
+
+class NotificationAdmin(admin.ModelAdmin):
+    list_display = ["id", "title", "content", "delivery_method"]
+
+
+admin.site.register(Notification, NotificationAdmin)

@@ -11,6 +11,7 @@ def on_notification_created(sender, instance: Notification, created, **kwargs):
     if created:
 
         for device in instance.user.devices.all():
-            send_push_notification(
-                device.id, title=instance.title, body=instance.content
-            )
+            if instance.delivery_method == "push":
+                send_push_notification(
+                    device.id, title=instance.title, body=instance.content
+                )

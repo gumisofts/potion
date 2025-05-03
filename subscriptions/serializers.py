@@ -25,3 +25,9 @@ class SubscriptionSerializer(ModelSerializer):
     class Meta:
         exclude = []
         model = Subscription
+
+
+class UserSubscriptionSerializer(ModelSerializer):
+    class Meta:
+        exclude = []
+        model = UserSubscription
