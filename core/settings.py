@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     "drf_spectacular_sidecar",
     "django_celery_beat",
     "enterprises",
+    "bills",
     "notifications",
     "files",
     "accounts",

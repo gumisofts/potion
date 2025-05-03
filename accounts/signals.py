@@ -15,15 +15,15 @@ logger = logging.getLogger(__name__)
 
 @receiver(user_phone_verified, sender=User, dispatch_uid="create_user_wallet_id")
 def create_user_wallet(sender, instance, **kwargs):
-    wallet = Wallet.objects.create(user_id=instance.id)
-    logger.info(f"Wallet created for user: {instance.email}")
+    if not instance.wallets.all().exists():
+        wallet = Wallet.objects.create(user_id=instance.id)
+        logger.info(f"Wallet created for user: {instance.email}")
 
 
 @receiver(post_save, sender=Business)
 def create_business_wallet(sender, instance, created, **kwargs):
     if created:
-        wallet = Wallet.objects.create(user_id=instance.owner.id)
-        instance.wallet_id = wallet.id
+        wallet = Wallet.objects.create(user_id=instance.owner.id, business=instance)
         logger.info(f"Wallet created for business: {instance.name}")
     else:
         logger.info(f"Signal received for business update: {instance.name}")

@@ -11,6 +11,13 @@ class WalletSerializers(ModelSerializer):
         model = Wallet
 
 
+class WalletPublicSerializer(ModelSerializer):
+    class Meta:
+        depth = 1
+        exclude = ["balance", "frozen_amount"]
+        model = Wallet
+
+
 class TransactionSerializer(ModelSerializer):
     class Meta:
         model = Transaction

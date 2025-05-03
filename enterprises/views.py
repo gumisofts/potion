@@ -1,4 +1,5 @@
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
+from drf_spectacular.types import OpenApiTypes
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 
@@ -47,10 +48,10 @@ class UserGrantViewset(viewsets.ModelViewSet):
         queryset = self.queryset
         user_id = self.request.query_params.get("user_id", None)
         status = self.request.query_params.get("status", None)
-        experies_at_gte = self.request.query_params.get("expires_at_gte", None)
+        expires_at_gte = self.request.query_params.get("expires_at_gte", None)
 
-        if experies_at_gte is not None:
-            queryset = queryset.filter(expires_at__gte=experies_at_gte)
+        if expires_at_gte is not None:
+            queryset = queryset.filter(expires_at__gte=expires_at_gte)
 
         if status is not None:
             queryset = queryset.filter(grant_status=status)
@@ -58,3 +59,15 @@ class UserGrantViewset(viewsets.ModelViewSet):
         if user_id is not None:
             queryset = queryset.filter(user=user_id)
         return queryset
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(name="user_id", type=OpenApiTypes.UUID, required=False),
+            OpenApiParameter(name="status", type=OpenApiTypes.STR, required=False),
+            OpenApiParameter(
+                name="expires_at_gte", type=OpenApiTypes.DATETIME, required=False
+            ),
+        ]
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
