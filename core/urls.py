@@ -26,4 +26,5 @@ urlpatterns = [
     path("wallets/", include("wallets.urls")),
     path("subscriptions/", include("subscriptions.urls")),
     path("apis/enterprises/", include("enterprises.urls")),
+    path("platform_admin/", include("platform_admin.urls")),
 ]
