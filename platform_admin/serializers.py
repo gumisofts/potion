@@ -1,4 +1,3 @@
-
 from datetime import datetime, timedelta
 from uuid import UUID
 
@@ -11,15 +10,15 @@ from rest_framework import exceptions, serializers, validators
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from core.utils import generate_secure_six_digits
-
 from accounts.models import *
+from core.utils import generate_secure_six_digits
 from wallets.models import *
 
 phone_validator = RegexValidator(
     regex=r"^(7|9)\d{8}$",
     message="Phone number must be 8-12 digits (e.g., +251945678903).",
 )
+
 
 class AdminGeneralInfoSerializer(serializers.ModelSerializer):
     class Meta:
@@ -50,14 +49,18 @@ class AdminLoginSerializer(serializers.Serializer):
 
         user = authenticate(phone_number=phone_number, password=password)
         if not user:
-            raise ValidationError({
-                "phone_number": "No user found with the given credentials",
-                "password": "No user found with the given credentials",
-            })
+            raise ValidationError(
+                {
+                    "phone_number": "No user found with the given credentials",
+                    "password": "No user found with the given credentials",
+                }
+            )
 
         # Only allow logins for admin/superuser
         if not (user.is_staff or user.is_superuser):
-            raise ValidationError("Only admin/superuser accounts are allowed to log in.")
+            raise ValidationError(
+                "Only admin/superuser accounts are allowed to log in."
+            )
 
         attrs = super().validate(attrs)
         attrs["user"] = user
@@ -73,7 +76,7 @@ class AdminLoginSerializer(serializers.Serializer):
             "access": str(refresh.access_token),
             "user": user,
         }
-    
+
 
 class UsersDataSerializer(serializers.Serializer):
     user_id = serializers.UUIDField(write_only=True)
@@ -81,23 +84,14 @@ class UsersDataSerializer(serializers.Serializer):
     is_phone_verified = serializers.BooleanField(write_only=True)
 
 
-
 class TransactionRecordSerializer(serializers.ModelSerializer):
     from_user = serializers.SerializerMethodField()
     to_user = serializers.SerializerMethodField()
-    date = serializers.DateTimeField(source='created_at', format='%Y-%m-%d %H:%M:%S')
+    date = serializers.DateTimeField(source="created_at", format="%Y-%m-%d %H:%M:%S")
 
     class Meta:
         model = Transaction
-        fields = [
-            'id',
-            'from_user',
-            'to_user',
-            'amount',
-            'status',
-            'remarks',
-            'date'
-        ]
+        fields = ["id", "from_user", "to_user", "amount", "status", "remarks", "date"]
 
     def get_from_user(self, obj):
         if obj.from_wallet.user:
