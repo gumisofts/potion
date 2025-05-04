@@ -7,8 +7,14 @@ from firebase_admin import credentials, messaging
 # Device token you want to send the notification to
 
 
-cred = credentials.Certificate(settings.GOOGLE_APPLICATION_CREDENTIALS)
-firebase_admin.initialize_app(cred)
+class Firebase:
+    initiated = False
+
+    def initialize():
+        if not Firebase.initiated:
+            cred = credentials.Certificate(settings.GOOGLE_APPLICATION_CREDENTIALS)
+            firebase_admin.initialize_app(cred)
+            Firebase.initiated = True
 
 
 def send_push_notification(fcm_token, title, body, data=None):
@@ -19,6 +25,8 @@ def send_push_notification(fcm_token, title, body, data=None):
     :param body: The body of the notification.
     :param data: Optional custom data to include with the notification.
     """
+
+    Firebase.initialize()
 
     try:
         message = messaging.Message(
