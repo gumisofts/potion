@@ -219,3 +219,6 @@ class Category(BaseModel):
     image = models.ImageField(null=True, blank=True)
     name = models.CharField(max_length=255)
     is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"{self.name}:- {self.id}"
