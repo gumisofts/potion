@@ -137,7 +137,12 @@ class User(AbstractUser):
 
 
 class Business(models.Model):
-    logo_id = models.UUIDField(null=True, blank=True)
+    logo = models.ForeignKey(
+        "files.FileMeta",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+    )
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="businesses")
     name = models.CharField(max_length=255)
     contact_phone = models.CharField(
