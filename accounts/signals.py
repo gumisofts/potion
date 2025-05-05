@@ -23,7 +23,7 @@ def create_user_wallet(sender, instance, **kwargs):
 @receiver(post_save, sender=Business)
 def create_business_wallet(sender, instance, created, **kwargs):
     if created:
-        wallet = Wallet.objects.create(user_id=instance.owner.id, business=instance)
+        wallet = Wallet.objects.create(business=instance)
         logger.info(f"Wallet created for business: {instance.name}")
     else:
         logger.info(f"Signal received for business update: {instance.name}")
