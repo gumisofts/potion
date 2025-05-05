@@ -142,6 +142,7 @@ class Business(models.Model):
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
+        related_name="business",
     )
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="businesses")
     name = models.CharField(max_length=255)
@@ -151,7 +152,13 @@ class Business(models.Model):
     contact_email = models.EmailField(
         validators=[EmailValidator(message="Invalid email format.")]
     )
-    license_id = models.UUIDField(max_length=255, null=True, blank=True)
+    license = models.ForeignKey(
+        "files.FileMeta",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="business_license",
+    )
     is_active = models.BooleanField(default=True)
     is_verified = models.BooleanField(default=False)
     trust_level = models.CharField(
