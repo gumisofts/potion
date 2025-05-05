@@ -8,9 +8,10 @@ from subscriptions.dispatch import subscribed, unsubscribed
 
 User = get_user_model()
 
+from core.models import BaseModel
 
-class Subscription(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
+
+class Subscription(BaseModel):
     name = models.CharField(max_length=255)
     service = models.ForeignKey(
         "accounts.Service", on_delete=models.CASCADE, related_name="subscriptions"
@@ -19,9 +20,6 @@ class Subscription(models.Model):
     fixed_price = models.BigIntegerField(null=True, blank=True)
     is_active = models.BooleanField(default=True)
     has_fixed_price = models.BooleanField(default=False)
-
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"{self.name} ({self.service.name})"
@@ -46,13 +44,10 @@ class SubscriptionManager(Manager):
         return sub
 
 
-class UserSubscription(models.Model):
-    id = models.UUIDField(default=uuid4, editable=False, primary_key=True)
+class UserSubscription(BaseModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     subscription = models.ForeignKey(Subscription, on_delete=models.CASCADE)
     is_active = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
     next_billing_date = models.DateTimeField(blank=True, null=True)
 
     objects = SubscriptionManager()

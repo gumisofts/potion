@@ -11,6 +11,7 @@ from django.db import models
 from django.db.models import Manager
 from django.utils.translation import gettext_lazy as _
 
+from core.models import BaseModel
 from core.utils import hash256
 
 phone_regex = r"^(\+)?(?P<country_code>251)?(?P<phone_number>[79]\d{8})$"
@@ -135,13 +136,7 @@ class User(AbstractUser):
         return super().save(**kwrags)
 
 
-class EmailConfirmationToken(models.Model):
-    created_at = models.DateTimeField(auto_now_add=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-
-
 class Business(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     logo_id = models.UUIDField(null=True, blank=True)
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="businesses")
     name = models.CharField(max_length=255)
@@ -159,17 +154,17 @@ class Business(models.Model):
         choices=[("low", "Low"), ("medium", "Medium"), ("high", "High")],
         default="low",
     )
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.name
 
 
-class Service(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
+class Service(BaseModel):
     business = models.ForeignKey(
         Business, on_delete=models.CASCADE, related_name="services"
+    )
+    image = models.ForeignKey(
+        "files.FileMeta", on_delete=models.SET_NULL, null=True, blank=True
     )
     name = models.CharField(max_length=255)
     service_type = models.CharField(
@@ -182,12 +177,10 @@ class Service(models.Model):
         return f"{self.name} ({self.service_type})"
 
 
-class VerificationCode(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
+class VerificationCode(BaseModel):
     token = models.CharField(max_length=255)
     expires_at = models.DateTimeField()
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="codes")
-    created_at = models.DateTimeField(auto_now_add=True)
     code_type = models.IntegerField(choices=[(1, "PHONE"), (2, "EMAIL")], default=1)
     is_used = models.BooleanField(default=False)
 
@@ -198,21 +191,19 @@ class VerificationCode(models.Model):
         return super().save(*args, **kwargs)
 
 
-class TemporaryCode(models.Model):
+class TemporaryCode(BaseModel):
     phone_number = models.CharField(max_length=255)
     code = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
 
 
-class UserDevice(models.Model):
-    id = models.CharField(max_length=255, primary_key=True, unique=True)
+class UserDevice(BaseModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="devices")
     label = models.CharField(max_length=255, null=True, blank=True)
     is_last_time_used_device = models.BooleanField(default=False)
 
 
-class Category(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
-    image_id = models.UUIDField(null=True, blank=True)
+class Category(BaseModel):
+    image = models.ImageField(null=True, blank=True)
     name = models.CharField(max_length=255)
     is_active = models.BooleanField(default=True)

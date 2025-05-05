@@ -5,9 +5,11 @@ from uuid import uuid4
 
 from django.db import models
 
+from core.models import BaseModel
+
 logger = logging.getLogger(__name__)
 
 
-class FileMeta(models.Model):
-    key = models.CharField(max_length=255, primary_key=True)
+class FileMeta(BaseModel):
+    key = models.CharField(max_length=255)
     public_url = models.CharField(max_length=255)

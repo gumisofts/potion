@@ -13,27 +13,7 @@ class Enterprise(BaseModel):
     description = models.TextField(verbose_name="Description")
     logo = models.ImageField(upload_to="enterprises/logos", verbose_name="Logo")
     is_active = models.BooleanField(default=False)
-
     pull_limit = models.IntegerField(default=0, verbose_name="Pull Limit")
-
-
-# class ApiKey(BaseModel):
-#     key = models.CharField(max_length=255, unique=True, verbose_name="API Key")
-#     enterprise = models.ForeignKey(
-#         Enterprise,
-#         on_delete=models.CASCADE,
-#         related_name="api_keys",
-#         verbose_name="Enterprise",
-#     )
-
-#     permissions = models.ManyToManyField(Permission, verbose_name="Permissions")
-
-#     restricted = models.BooleanField(default=False, verbose_name="Restricted")
-#     expires_at = models.DateTimeField(null=True, blank=True, verbose_name="Expires At")
-
-#     actions_call_back = models.URLField(
-#         max_length=255, null=True, blank=True, verbose_name="Actions Call Back"
-#     )
 
 
 class UserGrant(BaseModel):
@@ -54,6 +34,7 @@ class UserGrant(BaseModel):
     max_amount = models.DecimalField(
         max_digits=10, decimal_places=2, verbose_name="Max Amount"
     )
+
     meta_data = models.JSONField(
         verbose_name="Meta Data", null=True, blank=True
     )  # {"purpose": "Monthly subscription", "referenceId": "sub-789"}
