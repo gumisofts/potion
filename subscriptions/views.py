@@ -11,7 +11,7 @@ from subscriptions.serializers import *
 # Create your views here.
 
 
-class SubscribeViewsets(CreateModelMixin, ListModelMixin, GenericViewSet):
+class SubscribeViewsets(CreateModelMixin, GenericViewSet):
     serializer_class = UserSubscriptionSerializer
     queryset = UserSubscription.objects.all()
 
@@ -105,5 +105,20 @@ class SubscriptionViewset(ModelViewSet):
 
 class UserSubscriptionViewset(ListModelMixin, GenericViewSet):
     serializer_class = UserSubscriptionSerializer
-    queryset = UserSubscription.objects.all()
+    queryset = UserSubscription.objects.filter(is_active=True)
     permission_classes = [IsAuthenticated]
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(name="is_active", required=False, type=OpenApiTypes.BOOL)
+        ]
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+
+        is_active = self.request.query_params.get("is_active", None)
+
+        return queryset

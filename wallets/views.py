@@ -47,6 +47,17 @@ class WalletPublicViewset(ListModelMixin, GenericViewSet):
 
         return queryset
 
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="phone_number", required=False, type=OpenApiTypes.STR
+            ),
+            OpenApiParameter(name="user_id", required=False, type=OpenApiTypes.STR),
+        ]
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
 
 class TransactionViewsets(ListModelMixin, RetrieveModelMixin, GenericViewSet):
     serializer_class = TransactionSerializer
