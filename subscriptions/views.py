@@ -11,7 +11,7 @@ from subscriptions.serializers import *
 # Create your views here.
 
 
-class SubscribeViewsets(CreateModelMixin, GenericViewSet):
+class SubscribeViewsets(CreateModelMixin, ListModelMixin, GenericViewSet):
     serializer_class = UserSubscriptionSerializer
     queryset = UserSubscription.objects.all()
 
