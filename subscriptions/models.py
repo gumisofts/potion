@@ -11,8 +11,15 @@ User = get_user_model()
 from core.models import BaseModel
 
 
+class SubscriptionFeature(BaseModel):
+    content = models.CharField(max_length=255)
+
+
 class Subscription(BaseModel):
     name = models.CharField(max_length=255)
+    features = models.ManyToManyField(
+        SubscriptionFeature, related_name="features", blank=True
+    )
     service = models.ForeignKey(
         "accounts.Service", on_delete=models.CASCADE, related_name="subscriptions"
     )
