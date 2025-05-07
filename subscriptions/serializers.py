@@ -21,28 +21,46 @@ class UnsubscribeSerializer(UserSubscriptionSerializer):
         return UserSubscription.objects.unsubscribe(**validated_data)
 
 
+class FeaturesSerializer(ModelSerializer):
+    class Meta:
+        model = SubscriptionFeature
+        exclude = []
+
+
 class SubscriptionSerializer(ModelSerializer):
-    features = serializers.ListField(write_only=True)
+    features = FeaturesSerializer(many=True)
 
     class Meta:
         exclude = []
         model = Subscription
 
-    def validate(self, attrs):
-        attrs = super().validate(attrs)
+    # def validate(self, attrs):
+    #     attrs = super().validate(attrs)
 
-        features_str = attrs.get("features")
+    #     features_str = attrs.get("features")
 
-        print(features_str)
+    #     print(features_str)
 
+    #     features = []
+
+    #     if features_str:
+    #         for feature in features_str:
+    #             _, created = SubscriptionFeature.objects.get_or_create(content=feature)
+
+    #             features.append(_)
+
+    #     attrs["features"] = features
+
+    #     return attrs
+
+    def create(self, validated_data):
         features = []
+        for feature in validated_data.pop("features", []):
+            _, created = SubscriptionFeature.objects.get_or_create(**feature)
+            features.append(_)
 
-        if features_str:
-            for feature in features_str:
-                _, created = SubscriptionFeature.objects.get_or_create(content=feature)
+        subs = super().create(validated_data)
 
-                features.append(_)
+        subs.set(features)
 
-        attrs["features"] = features
-
-        return attrs
+        return subs

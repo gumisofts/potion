@@ -12,7 +12,7 @@ class EnterpriseSerializer(ModelSerializer):
 
 
 class UserGrantSerializer(ModelSerializer):
-    phone_number = serializers.CharField()
+    phone_number = serializers.CharField(write_only=True)
 
     class Meta:
         exclude = ["user"]
