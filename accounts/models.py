@@ -210,7 +210,7 @@ class TemporaryCode(BaseModel):
 
 
 class UserDevice(BaseModel):
-    id = models.CharField(max_length=255, primary_key=True, editable=False)
+    id = models.CharField(max_length=255, primary_key=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="devices")
     label = models.CharField(max_length=255, null=True, blank=True)
     is_last_time_used_device = models.BooleanField(default=False)
