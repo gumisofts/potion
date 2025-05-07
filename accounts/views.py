@@ -45,6 +45,17 @@ class UsersViewset(ListModelMixin, RetrieveModelMixin, GenericViewSet):
 
     queryset = User.objects.filter(is_active=True)
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(name="phone_number", required=False, type=OpenApiTypes.STR)
+        ]
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
 
 class VerificationCodeViewset(CreateModelMixin, GenericViewSet):
     serializer_class = CreateVerificationCodeSerializer
@@ -113,7 +124,7 @@ class BusinessServiceViewset(
     @extend_schema(
         parameters=[
             OpenApiParameter(
-                name="bussines_id",
+                name="business_id",
                 type=OpenApiTypes.UUID,
                 required=False,
                 location=OpenApiParameter.QUERY,
