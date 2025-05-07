@@ -37,7 +37,7 @@ def update_wallet_balance(sender, instance, created, **kwargs):
                 title="Payment Received",
                 content=f"You have received {instance.amount} ETB from {instance.from_wallet.user.phone_number}",
                 user=instance.to_wallet.user,
-                deliver_method="push",
+                delivery_method="push",
             )
 
         except Exception as e:
