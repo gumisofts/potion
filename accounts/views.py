@@ -48,6 +48,13 @@ class UsersViewset(ListModelMixin, RetrieveModelMixin, GenericViewSet):
     def get_queryset(self):
         queryset = super().get_queryset()
 
+        phone_number = self.request.query_params.get("phone_number")
+
+        if phone_number:
+            queryset = queryset.filter(phone_number=phone_number)
+
+        return queryset
+
     @extend_schema(
         parameters=[
             OpenApiParameter(name="phone_number", required=False, type=OpenApiTypes.STR)
