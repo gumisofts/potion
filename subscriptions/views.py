@@ -121,4 +121,7 @@ class UserSubscriptionViewset(ListModelMixin, GenericViewSet):
 
         is_active = self.request.query_params.get("is_active", None)
 
+        if is_active and is_active in ["True", "False"]:
+            queryset = queryset.filter(is_active=is_active)
+
         return queryset

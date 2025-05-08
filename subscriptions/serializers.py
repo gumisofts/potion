@@ -34,25 +34,6 @@ class SubscriptionSerializer(ModelSerializer):
         exclude = []
         model = Subscription
 
-    # def validate(self, attrs):
-    #     attrs = super().validate(attrs)
-
-    #     features_str = attrs.get("features")
-
-    #     print(features_str)
-
-    #     features = []
-
-    #     if features_str:
-    #         for feature in features_str:
-    #             _, created = SubscriptionFeature.objects.get_or_create(content=feature)
-
-    #             features.append(_)
-
-    #     attrs["features"] = features
-
-    #     return attrs
-
     def create(self, validated_data):
         features = []
         for feature in validated_data.pop("features", []):
@@ -61,6 +42,6 @@ class SubscriptionSerializer(ModelSerializer):
 
         subs = super().create(validated_data)
 
-        subs.set(features)
+        subs.features.set(features)
 
         return subs
