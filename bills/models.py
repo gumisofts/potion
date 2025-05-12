@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 from core.models import BaseModel
 
@@ -17,3 +18,5 @@ class Billing(BaseModel):
     amount = models.IntegerField(default=10)
     utility = models.ForeignKey(Utility, on_delete=models.CASCADE)
     user = models.ForeignKey(UtilityUser, on_delete=models.CASCADE)
+    is_paid = models.BooleanField(default=False)
+    due_date = models.DateTimeField(default=timezone.now)
