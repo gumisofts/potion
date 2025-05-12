@@ -8,5 +8,9 @@ class WalletAdmin(admin.ModelAdmin):
     list_filter = ["user"]
 
 
+class TransactionAdmin(admin.ModelAdmin):
+    list_display = ("id", "amount", "status", "remarks")
+
+
 admin.site.register(Wallet, WalletAdmin)
-admin.site.register(Transaction)
+admin.site.register(Transaction, TransactionAdmin)

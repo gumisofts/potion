@@ -40,8 +40,7 @@ class UserGrantAdmin(admin.ModelAdmin):
 class AccessGrantAdmin(admin.ModelAdmin):
     list_display = (
         "id",
-        "client_id",
-        "scope",
+        "access_id",
         "is_active",
         "actions_call_back",
     )

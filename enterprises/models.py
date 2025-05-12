@@ -63,10 +63,9 @@ class AccessGrant(BaseModel):
         related_name="wallets",
         verbose_name="Enterprise",
     )
-    client_id = models.CharField(max_length=255, verbose_name="Client ID")
-    client_secret = models.CharField(max_length=255, verbose_name="Client Secret")
-    redirect_uri = models.URLField(max_length=255, verbose_name="Redirect URI")
-    scope = models.TextField(verbose_name="Scope", null=True, blank=True)
+
+    access_id = models.CharField(max_length=255, verbose_name="Client ID")
+    access_secret = models.CharField(max_length=255, verbose_name="Client Secret")
     is_active = models.BooleanField(default=False, verbose_name="Is Active")
 
     actions_call_back = models.URLField(

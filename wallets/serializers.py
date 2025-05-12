@@ -40,8 +40,6 @@ class SendMoneyP2PSerializer(Serializer):
         if wallet.balance < amount:
             raise ValidationError({"amount": ["not enough amount in the wallet"]}, 400)
 
-        attrs["amount"] = -1 * amount
-
         return attrs
 
     def create(self, validated_data):
