@@ -22,7 +22,7 @@ class UserGrantSerializer(ModelSerializer):
     def validate(self, attrs):
         attrs = super().validate(attrs)
 
-        phone_number = attrs.get("phone_number")
+        phone_number = attrs.pop("phone_number")
 
         user = User.objects.filter(phone_number=phone_number).first()
 

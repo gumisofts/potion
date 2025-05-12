@@ -5,6 +5,7 @@ from .models import *
 
 class EnterpriseAdmin(admin.ModelAdmin):
     list_display = (
+        "id",
         "long_name",
         "short_name",
         "description",
