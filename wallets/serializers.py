@@ -2,6 +2,8 @@ from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer, Serializer
 from rest_framework.validators import ValidationError
 
+from accounts.serializers import BusinessSerializer, UserGeneralInfoSerializer
+from enterprises.serializers import EnterpriseSerializer
 from wallets.models import *
 
 
@@ -19,6 +21,31 @@ class WalletPublicSerializer(ModelSerializer):
 
 
 class TransactionSerializer(ModelSerializer):
+    to_user = serializers.SerializerMethodField()
+    to_business = serializers.SerializerMethodField()
+    to_enterprise = serializers.SerializerMethodField()
+
+    def get_to_user(self, instance):
+
+        if instance.to_wallet and instance.to_wallet.user:
+            return UserGeneralInfoSerializer(instance.to_wallet.user).data
+
+        return None
+
+    def get_to_business(self, instance):
+        return (
+            BusinessSerializer(instance.to_wallet.business).data
+            if instance.to_wallet and instance.to_wallet.business
+            else None
+        )
+
+    def get_to_enterprise(self, instance):
+        return (
+            EnterpriseSerializer(instance.to_wallet.enterprise).data
+            if instance.to_wallet and instance.to_wallet.enterprise
+            else None
+        )
+
     class Meta:
         model = Transaction
         exclude = []
