@@ -154,6 +154,17 @@ AUTHENTICATION_BACKENDS = [
     "accounts.backends.PhoneAuthenticationBackend",
 ]
 
+STORAGES = {
+    "default": {
+        "BACKEND": "storages.backends.s3.S3Storage",
+        "OPTIONS": {},
+    },
+    "staticfiles": {
+        "BACKEND": "storages.backends.s3.S3Storage",
+        "OPTIONS": {},
+    },
+}
+
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(days=90),
@@ -208,3 +219,9 @@ GOOGLE_APPLICATION_CREDENTIALS = {
     "client_x509_cert_url": env("GOOGLE_APPLICATION_CREDENTIALS_CERT_URL"),
     "universe_domain": "googleapis.com",
 }
+
+
+AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY")
+AWS_REGION = env("AWS_REGION")
+AWS_STORAGE_BUCKET_NAME = env("AWS_STORAGE_BUCKET_NAME")

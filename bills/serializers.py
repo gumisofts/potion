@@ -60,3 +60,9 @@ class PayUtilitySerializer(serializers.Serializer):
                 )
 
         return {"detail": "success"}
+
+
+class UtilitySerializer(ModelSerializer):
+    class Meta:
+        model = Utility
+        exclude = []

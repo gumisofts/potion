@@ -4,7 +4,7 @@ from bills.models import *
 
 
 class UtilityAdmin(admin.ModelAdmin):
-    list_display = ["id", "name"]
+    list_display = ["id", "name", "image"]
 
 
 class BillingAdmin(admin.ModelAdmin):

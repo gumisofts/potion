@@ -4,6 +4,7 @@ from bills.views import *
 
 router = DefaultRouter()
 
+router.register(r"utilities", UtilityViewset, basename="utilities")
 router.register(r"pay_bills", PaybillsViewset, basename="pay-bills")
 router.register(r"unpaid", BillsViewset, basename="unpaid-bills")
 
