@@ -11,6 +11,7 @@ class EnterpriseAdmin(admin.ModelAdmin):
         "description",
         "logo",
         "is_active",
+        "actions_call_back",
         "pull_limit",
     )
     search_fields = ("long_name", "short_name")
@@ -42,7 +43,6 @@ class AccessGrantAdmin(admin.ModelAdmin):
         "id",
         "access_id",
         "is_active",
-        "actions_call_back",
     )
     search_fields = ("key", "enterprise__long_name")
     ordering = ("created_at",)

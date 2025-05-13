@@ -1,9 +1,11 @@
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
-from rest_framework import viewsets
+from rest_framework.mixins import CreateModelMixin
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.viewsets import GenericViewSet, ModelViewSet
 
 from .models import Enterprise
+from .permissions import *
 from .serializers import *
 
 
@@ -31,14 +33,14 @@ from .serializers import *
         ]
     )
 )
-class UserGrantViewset(viewsets.ModelViewSet):
+class UserGrantViewset(ModelViewSet):
     """
     API endpoint that allows user grants to be viewed or edited.
     """
 
     queryset = UserGrant.objects.filter(is_active=True)
     serializer_class = UserGrantSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsEnterprise]
 
     def get_queryset(self):
         """
@@ -71,3 +73,8 @@ class UserGrantViewset(viewsets.ModelViewSet):
     )
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
+
+
+class AccessGrantViewset(CreateModelMixin, GenericViewSet):
+    serializer_class = AccessGrantSerializer
+    permission_classes = [IsEnterprise]

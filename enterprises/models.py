@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.contrib.auth.hashers import check_password, make_password
 from django.contrib.auth.models import Permission
 from django.db import models
 
@@ -14,6 +15,9 @@ class Enterprise(BaseModel):
     logo = models.ImageField(upload_to="enterprises/logos", verbose_name="Logo")
     is_active = models.BooleanField(default=False)
     pull_limit = models.IntegerField(default=0, verbose_name="Pull Limit")
+    actions_call_back = models.URLField(
+        max_length=255, null=True, blank=True, verbose_name="Actions Call Back"
+    )
 
 
 class UserGrant(BaseModel):
@@ -64,13 +68,13 @@ class AccessGrant(BaseModel):
         verbose_name="Enterprise",
     )
 
-    access_id = models.CharField(max_length=255, verbose_name="Client ID")
-    access_secret = models.CharField(max_length=255, verbose_name="Client Secret")
+    access_id = models.CharField(max_length=255, verbose_name="Access ID")
+    access_secret = models.CharField(max_length=255, verbose_name="Access Secret")
     is_active = models.BooleanField(default=False, verbose_name="Is Active")
 
-    actions_call_back = models.URLField(
-        max_length=255, null=True, blank=True, verbose_name="Actions Call Back"
-    )
+    def save(self, *args, **kwargs):
+        self.access_secret = make_password(self.access_secret)
+        return super().save(*args, **kwargs)
 
 
 class Settlement(BaseModel):

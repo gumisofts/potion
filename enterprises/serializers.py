@@ -1,3 +1,6 @@
+import secrets
+from uuid import uuid4
+
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 from rest_framework.validators import ValidationError
@@ -34,3 +37,24 @@ class UserGrantSerializer(ModelSerializer):
         attrs["user"] = user
 
         return attrs
+
+
+class AccessGrantSerializer(ModelSerializer):
+    enterprise = serializers.HiddenField(default=serializers.CurrentUserDefault())
+
+    class Meta:
+        model = AccessGrant
+        exclude = []
+        read_only_fields = ("access_id", "access_secret")
+
+    def validate(self, attrs):
+        attrs["access_id"] = uuid4().hex.capitalize()
+        attrs["access_secret"] = secrets.token_hex(32)
+        return super().validate(attrs)
+
+    def create(self, validated_data):
+        instance = super().create(validated_data)
+
+        instance.access_secret = validated_data.pop("access_secret")
+
+        return instance
