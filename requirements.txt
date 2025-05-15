@@ -65,7 +65,7 @@ kappa==0.6.0
 kombu==5.5.0
 MarkupSafe==3.0.2
 msgpack==1.1.0
-mypy-extensions==1.0.0
+mypy-extensions==1.1.0
 packaging==24.1
 pathspec==0.12.1
 pillow==10.4.0
