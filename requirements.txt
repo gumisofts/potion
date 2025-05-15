@@ -26,7 +26,7 @@ cron-descriptor==1.4.5
 cryptography==44.0.2
 daphne==4.1.2
 Django==5.1.1
-django-celery-beat==2.7.0
+django-celery-beat==2.8.1
 django-cors-headers==4.6.0
 django-storages==1.14.5
 django-timezone-field==7.1
