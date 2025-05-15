@@ -1,116 +1,173 @@
-from django.shortcuts import render
+from datetime import datetime
+
+from django.shortcuts import get_object_or_404, render
+from drf_spectacular.utils import (
+    OpenApiExample,
+    OpenApiParameter,
+    OpenApiTypes,
+    extend_schema,
+    extend_schema_view,
+)
 from rest_framework import status
-from rest_framework.generics import CreateAPIView
+from rest_framework.mixins import (
+    CreateModelMixin,
+    ListModelMixin,
+    RetrieveModelMixin,
+    UpdateModelMixin,
+)
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.viewsets import GenericViewSet
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 
-from .models import EmailConfirmationToken, User
-from .serializers import CustomTokenObtainPairSerializer, RegisterSerializer
+from accounts.permissions import *
+
+from .models import *
+from .serializers import *
 from .utils import send_confirmation_email
 
 
-class Home(APIView):
-    authentication_classes = [JWTAuthentication]
-
-    def get(self, request):
-        try:
-            user: User = request.user
-            custom_data = {
-                "username": user.username,
-                "email": user.email,
-                "is_staff": user.is_staff,
-                "message": "Hello, World!",
-            }
-            return Response(custom_data)
-        except Exception as e:
-            return Response({"error": str(e)}, status=401)
+class LoginViewset(GenericViewSet, CreateModelMixin):
+    serializer_class = UserLoginSerializer
 
 
-class Logout(APIView):
-    authentication_classes = [JWTAuthentication]
-
-    def post(self, request):
-        try:
-            refresh_token = request.data["refresh_token"]
-            token = RefreshToken(refresh_token)
-            token.blacklist()
-
-            return Response({"message": "Successfully logged out."}, status=200)
-        except Exception as e:
-            return Response({"error": str(e)}, status=400)
-
-
-class RegisterView(CreateAPIView):
+class RegisterViewset(GenericViewSet, CreateModelMixin):
     serializer_class = RegisterSerializer
+    queryset = User.objects.all()
+    permission_classes = []
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        if serializer.is_valid():
 
-            user: User = serializer.create(validated_data=serializer.validated_data)
-            refresh = CustomTokenObtainPairSerializer.get_token(user)
-            access = refresh.access_token
+class UsersViewset(ListModelMixin, RetrieveModelMixin, GenericViewSet):
+    serializer_class = UserGeneralInfoSerializer
+    permission_classes = [IsAuthenticated]
 
-            access_token_payload = AccessToken(str(access)).payload
+    queryset = User.objects.filter(is_active=True)
 
-            return Response(
-                {
-                    "user": serializer.data,
-                    "refresh": str(refresh),
-                    "access": str(refresh.access_token),
-                    "access_token_payload": access_token_payload,
-                },
-                status=status.HTTP_201_CREATED,
+    def get_queryset(self):
+        queryset = super().get_queryset()
+
+        phone_number = self.request.query_params.get("phone_number")
+
+        if phone_number:
+            queryset = queryset.filter(phone_number=phone_number)
+
+        return queryset
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(name="phone_number", required=False, type=OpenApiTypes.STR)
+        ]
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
+
+class VerificationCodeViewset(CreateModelMixin, GenericViewSet):
+    serializer_class = CreateVerificationCodeSerializer
+
+
+class VerificationCodeResendViewset(CreateModelMixin, GenericViewSet):
+    serializer_class = ResendVerificationSerializer
+
+
+class BusinessViewset(
+    CreateModelMixin, RetrieveModelMixin, ListModelMixin, GenericViewSet
+):
+    serializer_class = BusinessSerializer
+    queryset = Business.objects.all()
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user_id = self.request.GET.get("user_id")
+
+        queryset = self.queryset
+
+        if user_id:
+            queryset = queryset.filter(owner=user_id)
+
+        return queryset
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="user_id",
+                type=OpenApiTypes.UUID,
+                required=False,
+                location=OpenApiParameter.QUERY,
             )
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        ]
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
 
 
-class UserInformationAPIView(APIView):
-    authentication_classes = [JWTAuthentication]
+class BusinessServiceViewset(
+    CreateModelMixin, RetrieveModelMixin, ListModelMixin, GenericViewSet
+):
+    serializer_class = BusinessServiceSerializer
+    queryset = Service.objects.all()
+    permission_classes = [BusinnessItemPermission]
 
-    def get(self, request):
-        try:
-            user: User = request.user
-            payload = {
-                "email": user.email,
-                "is_email_confirmed": user.is_email_confirmed,
-            }
-            return Response(data=payload, status=200)
-        except Exception as e:
-            return Response({"error": str(e)}, status=401)
+    def get_queryset(self):
+        queryset = self.queryset
+
+        business_id = self.request.GET.get("business_id")
+        categories = self.request.GET.get("categories")
+
+        is_active = self.request.GET.get("is_active")
+        if is_active:
+            queryset = queryset.filter(is_active=is_active)
+
+        if categories:
+            categories = categories.split(",")
+            queryset = queryset.filter(categories__in=categories)
+
+        if business_id:
+            queryset = queryset.filter(business=business_id)
+        return queryset
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="business_id",
+                type=OpenApiTypes.UUID,
+                required=False,
+                location=OpenApiParameter.QUERY,
+            ),
+            OpenApiParameter(
+                name="name",
+                type=OpenApiTypes.STR,
+                required=False,
+                location=OpenApiParameter.QUERY,
+            ),
+            OpenApiParameter(
+                name="is_active",
+                type=OpenApiTypes.STR,
+                required=False,
+                location=OpenApiParameter.QUERY,
+            ),
+            OpenApiParameter(
+                name="categories",
+                type=OpenApiTypes.STR,
+                required=False,
+                location=OpenApiParameter.QUERY,
+            ),
+        ]
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
 
 
-class SendEmailConfirmationTokenAPIView(APIView):
-    authentication_classes = [JWTAuthentication]
-
-    def post(self, request, format=None):
-        try:
-            user: User = request.user
-            token = EmailConfirmationToken.objects.create(user=user)
-            send_confirmation_email(
-                email=user.email, token_id=token.pk, user_id=user.pk
-            )
-            return Response(data=None, status=201)
-        except Exception as e:
-            return Response({"error": str(e)}, status=401)
+class UserDeviceViewset(
+    CreateModelMixin, RetrieveModelMixin, ListModelMixin, GenericViewSet
+):
+    serializer_class = UserDeviceSerializer
+    permission_classes = [IsAuthenticated]
+    queryset = UserDevice.objects.filter()
 
 
-def confirm_email_view(request):
-    token_id = request.GET.get("token_id", None)
-    user_id = request.GET.get("user_id", None)
-    try:
-        token = EmailConfirmationToken.objects.get(pk=token_id)
-        user = token.user
-        user.is_email_confirmed = True
-        user.save()
-        data = {"is_email_confirmed": True}
-        return render(
-            request, template_name="accounts/confirm_email_view.html", context=data
-        )
-    except EmailConfirmationToken.DoesNotExist:
-        data = {"is_email_confirmed": False}
-        return render(
-            request, template_name="accounts/confirm_email_view.html", context=data
-        )
+class CategoriesViewset(ListModelMixin, GenericViewSet):
+    serializer_class = CategoriesSerializer
+    queryset = Category.objects.all()
