@@ -13,9 +13,7 @@ router.register(
 router.register(
     "dispute-records", DisputeTransactionViewset, basename="dispute-records"
 )
-router.register(
-    "business-records", BusinessRecordViewset, basename="business-records"
-)
+router.register("business-records", BusinessRecordViewset, basename="business-records")
 
 router.register("admin_platform_login", LoginViewset, basename="admin-platform-login")
 # Register Viewsets here

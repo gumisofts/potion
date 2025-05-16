@@ -13,6 +13,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from accounts.models import *
 from core.utils import generate_secure_six_digits
 from wallets.models import *
+
 from .models import *
 
 phone_validator = RegexValidator(
@@ -108,76 +109,97 @@ class TransactionRecordSerializer(serializers.ModelSerializer):
             return str(obj.to_wallet.user.id)
         return f"business:{obj.to_wallet.business.id}"
 
+
 class DisputeTransactionSerializer(serializers.ModelSerializer):
     transaction = serializers.SlugRelatedField(
-        slug_field='id',
+        slug_field="id",
         queryset=Transaction.objects.all(),
-        help_text="ID of the disputed transaction"
+        help_text="ID of the disputed transaction",
     )
     created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
-    
+
     class Meta:
         model = Dispute
-        fields = ['id', 'transaction', 'phone_number', 'amount', 'notes', 'status', 'created_at']
+        fields = [
+            "id",
+            "transaction",
+            "phone_number",
+            "amount",
+            "notes",
+            "status",
+            "created_at",
+        ]
         extra_kwargs = {
-            'transaction': {'required': True},
-            'amount': {'required': False},  # Make amount optional
-            'created_at': {'read_only': True},
+            "transaction": {"required": True},
+            "amount": {"required": False},  # Make amount optional
+            "created_at": {"read_only": True},
         }
 
     def validate_transaction(self, value):
         if not Transaction.objects.filter(id=value.id).exists():
             raise serializers.ValidationError("Transaction does not exist")
         return value
-    
+
+
 class DisputeStatusUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Dispute
-        fields = ['id', 'status']
-        read_only_fields = ['id']
+        fields = ["id", "status"]
+        read_only_fields = ["id"]
 
     def validate_status(self, value):
         instance = self.instance
-        if instance and instance.status != 'needs_response' and value == 'in_review':
+        if instance and instance.status != "needs_response" and value == "in_review":
             raise serializers.ValidationError(
                 "Can only move to 'in_review' from 'needs_response' status"
             )
         return value
-    
+
+
 class DisputeReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Dispute
-        fields = ['id', 'status', 'notes']
-        read_only_fields = ['id']
+        fields = ["id", "status", "notes"]
+        read_only_fields = ["id"]
 
     def validate(self, data):
         instance = self.instance
-        if instance.status != 'in_review':
+        if instance.status != "in_review":
             raise serializers.ValidationError(
                 "Can only move to 'reviewed' from 'in_review' status"
             )
         return data
 
+
 class DisputeRefundSerializer(serializers.ModelSerializer):
     class Meta:
         model = Dispute
-        fields = ['id', 'status', 'notes']
-        read_only_fields = ['id']
+        fields = ["id", "status", "notes"]
+        read_only_fields = ["id"]
 
     def validate(self, data):
         instance = self.instance
-        if instance.status != 'reviewed':
-            raise serializers.ValidationError(
-                "Can only refund from 'reviewed' status"
-            )
+        if instance.status != "reviewed":
+            raise serializers.ValidationError("Can only refund from 'reviewed' status")
         return data
+
 
 class BusinessRecordSerializer(serializers.ModelSerializer):
     created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
+
     class Meta:
         model = Business
-        fields = ['id', 'name', 'contact_phone', 'contact_email', 'is_active', 'is_verified', 'owner', 'trust_level', 'created_at']
+        fields = [
+            "id",
+            "name",
+            "contact_phone",
+            "contact_email",
+            "is_active",
+            "is_verified",
+            "owner",
+            "trust_level",
+            "created_at",
+        ]
         extra_kwargs = {
-            'created_at': {'read_only': True},
+            "created_at": {"read_only": True},
         }
-

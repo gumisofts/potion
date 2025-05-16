@@ -160,11 +160,11 @@ AUTHENTICATION_BACKENDS = [
 
 if DEBUG:
     STORAGES = {
-        'default': {
-            'BACKEND': 'django.core.files.storage.FileSystemStorage',
+        "default": {
+            "BACKEND": "django.core.files.storage.FileSystemStorage",
         },
-        'staticfiles': {
-            'BACKEND': 'django.contrib.staticfiles.storage.StaticFilesStorage',
+        "staticfiles": {
+            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
         },
     }
 else:
