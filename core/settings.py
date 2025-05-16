@@ -145,6 +145,8 @@ AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID")
 AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY")
 AWS_STORAGE_BUCKET_NAME = env("AWS_STORAGE_BUCKET_NAME")
 AWS_S3_REGION_NAME = env("AWS_S3_REGION_NAME", "eu-north-1")
+AWS_REGION = AWS_S3_REGION_NAME
+
 
 ADMIN = ("Murad", "nuradhussen082@gmail.com")
 
@@ -162,10 +164,16 @@ STORAGES = {
     },
     "staticfiles": {
         "BACKEND": "storages.backends.s3.S3Storage",
-        "OPTIONS": {},
+        "OPTIONS": {
+            # "default_acl": "public-read",
+            "querystring_auth": False,
+            "location": "static",
+        },
     },
 }
 
+AWS_DEFAULT_ACL = None
+AWS_QUERYSTRING_AUTH = False
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(days=90),
@@ -220,9 +228,3 @@ GOOGLE_APPLICATION_CREDENTIALS = {
     "client_x509_cert_url": env("GOOGLE_APPLICATION_CREDENTIALS_CERT_URL"),
     "universe_domain": "googleapis.com",
 }
-
-
-AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID")
-AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY")
-AWS_REGION = env("AWS_REGION")
-AWS_STORAGE_BUCKET_NAME = env("AWS_STORAGE_BUCKET_NAME")
