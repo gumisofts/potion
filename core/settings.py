@@ -166,7 +166,7 @@ STORAGES = {
         "BACKEND": "storages.backends.s3.S3Storage",
         "OPTIONS": {
             # "default_acl": "public-read",
-            "querystring_auth": True,
+            "querystring_auth": False,
             "location": "static",
         },
     },
