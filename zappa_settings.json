@@ -19,11 +19,11 @@
         "route53_enabled": false,
         "events": [
             {
-                "function:": "tasks_handler.tasks.test_crons",
+                "function": "tasks_handler.tasks.test_crons",
                 "expression": "rate(1 minute)"
             },
             {
-                "function:": "tasks_handler.tasks.subscriptions_payment",
+                "function": "tasks_handler.tasks.subscriptions_payment",
                 "expression": "rate(1 day)"
             }
         ]
