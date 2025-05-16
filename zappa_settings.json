@@ -16,7 +16,17 @@
         "slim_handler": true,
         "certificate_arn": "arn:aws:acm:us-east-1:626635425063:certificate/dae101ec-26dc-4170-9d2d-20858cc710b1",
         "domain": "potion.dev.gumisofts.com",
-        "route53_enabled": false
+        "route53_enabled": false,
+        "events": [
+            {
+                "function:": "tasks_handler.tasks.test_crons",
+                "expression": "rate(1 minute)"
+            },
+            {
+                "function:": "tasks_handler.tasks.subscriptions_payment",
+                "expression": "rate(1 day)"
+            }
+        ]
     },
     "pro": {
         "aws_region": "eu-north-1",
