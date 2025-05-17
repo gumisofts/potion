@@ -8,11 +8,10 @@ from .models import Notification
 @receiver(post_save, sender=Notification)
 def on_notification_created(sender, instance: Notification, created, **kwargs):
 
-    if created:
-        pass
-    for device in instance.user.devices.all():
-        if instance.delivery_method == "push":
-            tt = send_push_notification(
-                device.id, title=instance.title, body=instance.content
-            )
-            print(tt)
+    if instance.user:
+        for device in instance.user.devices.all():
+            if instance.delivery_method == "push":
+                tt = send_push_notification(
+                    device.id, title=instance.title, body=instance.content
+                )
+                print(tt)

@@ -44,9 +44,9 @@ def handle_one_subscription(user_subscription):
 
 def subscriptions_payment():
     subscriptions = UserSubscription.objects.filter(
-        is_active=True, next_billing_date=timezone.now()
+        is_active=True, next_billing_date__lte=timezone.now()
     )
-
+    print(f"subscriptions_payment: {subscriptions.count()} subscriptions found")
     for subscription in subscriptions:
         one_subscription_payment(subscription)
 
@@ -58,7 +58,7 @@ def one_subscription_payment(user_subscription):
         user = user_subscription.user
         from_wallet = user.wallet
         to_be_deducted_amount = user_subscription.subscription.fixed_price
-        to_wallet = user_subscription.subscription.bussines.wallet
+        to_wallet = user_subscription.subscription.service.business.wallet
 
         tr = Transaction.objects.create(
             from_wallet=from_wallet,

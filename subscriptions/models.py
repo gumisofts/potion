@@ -4,6 +4,8 @@ from django.contrib.auth import get_user_model
 from django.db import models
 from django.db.models import Manager
 
+from django.utils import timezone
+from datetime import timedelta
 from subscriptions.dispatch import subscribed, unsubscribed
 
 User = get_user_model()
@@ -37,6 +39,7 @@ class SubscriptionManager(Manager):
     def subscribe(self, user, subscription, **kwargs):
         sub, created = self.get_or_create(user=user, subscription=subscription)
         sub.is_active = True
+        sub.next_billing_date = timezone.now() + timedelta(days=subscription.frequency)
         sub.save()
 
         subscribed.send({"user": user, "subscription": subscription})
