@@ -1,11 +1,11 @@
+from datetime import timedelta
 from uuid import uuid4
 
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.db.models import Manager
-
 from django.utils import timezone
-from datetime import timedelta
+
 from subscriptions.dispatch import subscribed, unsubscribed
 
 User = get_user_model()
