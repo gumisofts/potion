@@ -11,6 +11,21 @@ class UserSubscriptionSerializer(serializers.Serializer):
         queryset=Subscription.objects.filter(is_active=True)
     )
 
+    def validate(self, attrs):
+        attrs = super().validate(attrs)
+
+        subscription = attrs.get("subscription")
+        user = attrs.get("user")
+
+        if (
+            subscription.payment_type == "pre"
+            and subscription.fixed_price > user.wallet.balance
+        ):
+            raise serializers.ValidationError(
+                {"detail": "Not enough balance in wallet for this subscription"}
+            )
+        return attrs
+
     def create(self, validated_data):
 
         return UserSubscription.objects.subscribe(**validated_data)

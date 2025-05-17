@@ -32,6 +32,7 @@ def update_wallet_balance(sender, instance, created, **kwargs):
                 title="Transaction Completed",
                 content=f"Transfer of amount {instance.amount} ETB has been completed",
                 user=instance.from_wallet.user,
+                delivery_method="push",
             )
             Notification.objects.create(
                 title="Payment Received",

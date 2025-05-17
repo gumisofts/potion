@@ -1,8 +1,10 @@
+from datetime import timedelta
 from uuid import uuid4
 
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.db.models import Manager
+from django.utils import timezone
 
 from subscriptions.dispatch import subscribed, unsubscribed
 
@@ -27,6 +29,14 @@ class Subscription(BaseModel):
     fixed_price = models.BigIntegerField(null=True, blank=True)
     is_active = models.BooleanField(default=True)
     has_fixed_price = models.BooleanField(default=False)
+    payment_type = models.CharField(
+        max_length=255,
+        choices=[
+            ("pre", "Prepaid"),
+            ("post", "Postpaid"),
+        ],
+        default="pre",
+    )
 
     def __str__(self):
         return f"{self.name} ({self.service.name})"
@@ -37,6 +47,7 @@ class SubscriptionManager(Manager):
     def subscribe(self, user, subscription, **kwargs):
         sub, created = self.get_or_create(user=user, subscription=subscription)
         sub.is_active = True
+        sub.next_billing_date = timezone.now() + timedelta(days=subscription.frequency)
         sub.save()
 
         subscribed.send({"user": user, "subscription": subscription})
