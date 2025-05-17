@@ -16,7 +16,7 @@ class SubscriptionAdmin(admin.ModelAdmin):
 
 
 class UserSubscriptionAdmin(admin.ModelAdmin):
-    list_display = ["id", "user", "subscription", "is_active"]
+    list_display = ["id", "user", "subscription", "is_active", "next_billing_date"]
 
 
 admin.site.register(Subscription, SubscriptionAdmin)
