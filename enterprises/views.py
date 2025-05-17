@@ -1,7 +1,7 @@
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
 from rest_framework.mixins import CreateModelMixin
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
 
 from .models import Enterprise
@@ -38,9 +38,9 @@ class UserGrantViewset(ModelViewSet):
     API endpoint that allows user grants to be viewed or edited.
     """
 
-    queryset = UserGrant.objects.filter(is_active=True)
+    queryset = UserGrant.objects.all()
     serializer_class = UserGrantSerializer
-    permission_classes = [IsEnterprise]
+    permission_classes = [IsEnterpriseOrReadOnly]
 
     def get_queryset(self):
         """
@@ -57,6 +57,10 @@ class UserGrantViewset(ModelViewSet):
 
         if status is not None:
             queryset = queryset.filter(grant_status=status)
+        if IsEnterprise().has_permission(self.request, self):
+            queryset = queryset.filter(enterprise=self.request.user)
+        else:
+            queryset = queryset.filter(user=self.request.user)
 
         if user_id is not None:
             queryset = queryset.filter(user=user_id)
@@ -73,6 +77,25 @@ class UserGrantViewset(ModelViewSet):
     )
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="X-Access-Id",
+                type=OpenApiTypes.STR,
+                required=True,
+                location=OpenApiParameter.HEADER,
+            ),
+            OpenApiParameter(
+                name="X-Access-Secret",
+                type=OpenApiTypes.STR,
+                required=True,
+                location=OpenApiParameter.HEADER,
+            ),
+        ]
+    )
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)
 
 
 class AccessGrantViewset(CreateModelMixin, GenericViewSet):
