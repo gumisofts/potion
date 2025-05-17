@@ -7,7 +7,7 @@ from .models import *
 
 class EnterpriseAPIKeyAuthentication(BaseAuthentication):
     def authenticate(self, request):
-        access_id = request.headers.get("X-Access-ID")
+        access_id = request.headers.get("X-Access-Id")
         access_secret = request.headers.get("X-Access-Secret")
 
         if not access_id or not access_secret:
