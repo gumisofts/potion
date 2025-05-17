@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "accounts",
     "wallets",
     "subscriptions",
+    "platform_admin",
 ]
 
 MIDDLEWARE = [
@@ -157,20 +158,30 @@ AUTHENTICATION_BACKENDS = [
     "accounts.backends.PhoneAuthenticationBackend",
 ]
 
-STORAGES = {
-    "default": {
-        "BACKEND": "storages.backends.s3.S3Storage",
-        "OPTIONS": {},
-    },
-    "staticfiles": {
-        "BACKEND": "storages.backends.s3.S3Storage",
-        "OPTIONS": {
-            # "default_acl": "public-read",
-            "querystring_auth": False,
-            "location": "static",
+if DEBUG:
+    STORAGES = {
+        "default": {
+            "BACKEND": "django.core.files.storage.FileSystemStorage",
         },
-    },
-}
+        "staticfiles": {
+            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        },
+    }
+else:
+    STORAGES = {
+        "default": {
+            "BACKEND": "storages.backends.s3.S3Storage",
+            "OPTIONS": {},
+        },
+        "staticfiles": {
+            "BACKEND": "storages.backends.s3.S3Storage",
+            "OPTIONS": {
+                # "default_acl": "public-read",
+                "querystring_auth": False,
+                "location": "static",
+            },
+        },
+    }
 
 AWS_DEFAULT_ACL = None
 AWS_QUERYSTRING_AUTH = False
