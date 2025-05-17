@@ -29,6 +29,14 @@ class Subscription(BaseModel):
     fixed_price = models.BigIntegerField(null=True, blank=True)
     is_active = models.BooleanField(default=True)
     has_fixed_price = models.BooleanField(default=False)
+    payment_type = models.CharField(
+        max_length=255,
+        choices=[
+            ("pre", "Prepaid"),
+            ("post", "Postpaid"),
+        ],
+        default="pre",
+    )
 
     def __str__(self):
         return f"{self.name} ({self.service.name})"
