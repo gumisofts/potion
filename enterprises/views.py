@@ -1,6 +1,6 @@
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
-from rest_framework.mixins import CreateModelMixin, ListModelMixin
+from rest_framework.mixins import CreateModelMixin, ListModelMixin, UpdateModelMixin
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
 
@@ -98,9 +98,9 @@ class EnterpriseUserGrantViewset(CreateModelMixin, ListModelMixin, GenericViewSe
         return super().create(request, *args, **kwargs)
 
 
-class UserGrantViewset(ModelViewSet):
+class UserGrantViewset(ListModelMixin, UpdateModelMixin, GenericViewSet):
     queryset = UserGrant.objects.all()
-    serializer_class = UserGrantSerializer
+    serializer_class = UserGrantSerializerForUser
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):

@@ -39,6 +39,15 @@ class UserGrantSerializer(ModelSerializer):
         return attrs
 
 
+class UserGrantSerializerForUser(ModelSerializer):
+    class Meta:
+        exclude = ["user"]
+        read_only_fields = ["enterprise"]
+        model = UserGrant
+
+        model = UserGrant
+
+
 class AccessGrantSerializer(ModelSerializer):
     enterprise = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
