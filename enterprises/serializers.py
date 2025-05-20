@@ -40,11 +40,10 @@ class UserGrantSerializer(ModelSerializer):
 
 
 class UserGrantSerializerForUser(ModelSerializer):
+    enterprise = EnterpriseSerializer(read_only=True)
+
     class Meta:
         exclude = ["user"]
-        read_only_fields = ["enterprise"]
-        model = UserGrant
-
         model = UserGrant
 
 

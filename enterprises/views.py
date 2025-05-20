@@ -40,7 +40,7 @@ class EnterpriseUserGrantViewset(CreateModelMixin, ListModelMixin, GenericViewSe
 
     queryset = UserGrant.objects.all()
     serializer_class = UserGrantSerializer
-    permission_classes = [IsEnterpriseOrReadOnly]
+    permission_classes = [IsEnterprise]
 
     def get_queryset(self):
         """
@@ -57,10 +57,7 @@ class EnterpriseUserGrantViewset(CreateModelMixin, ListModelMixin, GenericViewSe
 
         if status is not None:
             queryset = queryset.filter(grant_status=status)
-        if IsEnterprise().has_permission(self.request, self):
-            queryset = queryset.filter(enterprise=self.request.user)
-        else:
-            queryset = queryset.filter(user=self.request.user)
+        queryset = queryset.filter(enterprise=self.request.user)
 
         if user_id is not None:
             queryset = queryset.filter(user=user_id)
