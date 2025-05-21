@@ -34,7 +34,6 @@ class FileMetaSerializer(serializers.ModelSerializer):
     content_type = serializers.CharField(read_only=True)
     last_modified = serializers.DateTimeField(read_only=True)
     meta_data = serializers.JSONField(read_only=True)
-    url = serializers.SerializerMethodField()
 
     class Meta:
         model = FileMeta
@@ -52,12 +51,6 @@ class FileMetaSerializer(serializers.ModelSerializer):
         meta_data = {**meta_data, **attrs}
 
         return meta_data
-
-    def get_url(self, obj):
-        request = self.context.get("request")
-        if request:
-            return request.build_absolute_uri(obj.public_url)
-        return None
 
     def create(self, validated_data):
         bucket_name = settings.AWS_STORAGE_BUCKET_NAME
@@ -88,6 +81,7 @@ class SignedURLSerializer(serializers.Serializer):
 
     id = serializers.CharField(read_only=True)
     signed_url = serializers.CharField(read_only=True)
+    key = serializers.CharField(read_only=True)
 
     def create(self, validated_data):
         s3_client = boto3.client(
@@ -115,7 +109,12 @@ class SignedURLSerializer(serializers.Serializer):
             },
             ExpiresIn=600,  # URL expires in 10 minutes
         )
-        return {"signed_url": signed_url, "id": file_id, **validated_data}
+        return {
+            "signed_url": signed_url,
+            "id": file_id,
+            **validated_data,
+            "key": file_path,
+        }
 
     def get_content_type(self, file_path: str) -> str:
         """
