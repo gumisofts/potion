@@ -60,10 +60,11 @@ class FileMetaSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         bucket_name = settings.AWS_STORAGE_BUCKET_NAME
         s3_region = settings.AWS_S3_REGION_NAME
+        key = validated_data.get("key")
         return super().create(
             {
-                "key": validated_data.get("key"),
-                "public_url": f"https://{bucket_name}.s3.{s3_region}.amazonaws.com/{validated_data.get("key")}",
+                "key": key,
+                "public_url": f"https://{bucket_name}.s3.{s3_region}.amazonaws.com/{key}",
             }
         )
 
