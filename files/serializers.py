@@ -34,10 +34,12 @@ class FileMetaSerializer(serializers.ModelSerializer):
     content_type = serializers.CharField(read_only=True)
     last_modified = serializers.DateTimeField(read_only=True)
     meta_data = serializers.JSONField(read_only=True)
+    url = serializers.SerializerMethodField()
 
     class Meta:
         model = FileMeta
-        exclude = ["public_url"]
+        exclude = []
+        read_only_fields = ["public_url"]
 
     def validate(self, attrs):
         attrs = super().validate(attrs)
@@ -51,8 +53,21 @@ class FileMetaSerializer(serializers.ModelSerializer):
 
         return meta_data
 
+    def get_url(self, obj):
+        request = self.context.get("request")
+        if request:
+            return request.build_absolute_uri(obj.public_url)
+        return None
+
     def create(self, validated_data):
-        return super().create({"key": validated_data.get("key")})
+        bucket_name = settings.AWS_STORAGE_BUCKET_NAME
+        s3_region = settings.AWS_S3_REGION_NAME
+        return super().create(
+            {
+                "key": validated_data.get("key"),
+                "public_url": f"https://{bucket_name}.s3.{s3_region}.amazonaws.com/{validated_data.get("key")}",
+            }
+        )
 
 
 class SignedURLSerializer(serializers.Serializer):

@@ -23,3 +23,4 @@ class FileMetaDataViewset(
 ):
     serializer_class = FileMetaSerializer
     permission_classes = [IsAuthenticated]
+    queryset = FileMeta.objects.all()
