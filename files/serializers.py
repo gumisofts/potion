@@ -10,7 +10,12 @@ from rest_framework.exceptions import ValidationError
 
 from files.models import *
 
-s3 = boto3.client("s3")
+s3 = boto3.client(
+    "s3",
+    aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+    aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+    region_name=settings.AWS_S3_REGION_NAME,
+)
 
 
 def get_object_metadata(object_key, bucket_name=settings.AWS_STORAGE_BUCKET_NAME):
@@ -37,7 +42,8 @@ class FileMetaSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FileMeta
-        exclude = ["public_url"]
+        exclude = []
+        read_only_fields = ["public_url"]
 
     def validate(self, attrs):
         attrs = super().validate(attrs)
@@ -52,7 +58,15 @@ class FileMetaSerializer(serializers.ModelSerializer):
         return meta_data
 
     def create(self, validated_data):
-        return super().create({"key": validated_data.get("key")})
+        bucket_name = settings.AWS_STORAGE_BUCKET_NAME
+        s3_region = settings.AWS_S3_REGION_NAME
+        key = validated_data.get("key")
+        return super().create(
+            {
+                "key": key,
+                "public_url": f"https://{bucket_name}.s3.{s3_region}.amazonaws.com/{key}",
+            }
+        )
 
 
 class SignedURLSerializer(serializers.Serializer):
@@ -73,6 +87,7 @@ class SignedURLSerializer(serializers.Serializer):
 
     id = serializers.CharField(read_only=True)
     signed_url = serializers.CharField(read_only=True)
+    key = serializers.CharField(read_only=True)
 
     def create(self, validated_data):
         s3_client = boto3.client(
@@ -100,7 +115,12 @@ class SignedURLSerializer(serializers.Serializer):
             },
             ExpiresIn=600,  # URL expires in 10 minutes
         )
-        return {"signed_url": signed_url, "id": file_id, **validated_data}
+        return {
+            "signed_url": signed_url,
+            "id": file_id,
+            **validated_data,
+            "key": file_path,
+        }
 
     def get_content_type(self, file_path: str) -> str:
         """

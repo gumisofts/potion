@@ -105,7 +105,7 @@ class SubscriptionViewset(ModelViewSet):
 
 class UserSubscriptionViewset(ListModelMixin, GenericViewSet):
     serializer_class = UserSubscriptionSerializer
-    queryset = UserSubscription.objects.filter(is_active=True)
+    queryset = UserSubscription.objects.all()
     permission_classes = [IsAuthenticated]
 
     @extend_schema(
@@ -123,5 +123,7 @@ class UserSubscriptionViewset(ListModelMixin, GenericViewSet):
 
         if is_active and is_active in ["True", "False"]:
             queryset = queryset.filter(is_active=is_active)
+
+        queryset = queryset.filter(user=self.request.user)
 
         return queryset

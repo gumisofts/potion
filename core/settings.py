@@ -158,30 +158,23 @@ AUTHENTICATION_BACKENDS = [
     "accounts.backends.PhoneAuthenticationBackend",
 ]
 
-if DEBUG:
-    STORAGES = {
-        "default": {
-            "BACKEND": "django.core.files.storage.FileSystemStorage",
+
+STORAGES = {
+    "default": {
+        "BACKEND": "storages.backends.s3.S3Storage",
+        "OPTIONS": {
+            "querystring_auth": False,
         },
-        "staticfiles": {
-            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "storages.backends.s3.S3Storage",
+        "OPTIONS": {
+            # "default_acl": "public-read",
+            "querystring_auth": False,
+            "location": "static",
         },
-    }
-else:
-    STORAGES = {
-        "default": {
-            "BACKEND": "storages.backends.s3.S3Storage",
-            "OPTIONS": {},
-        },
-        "staticfiles": {
-            "BACKEND": "storages.backends.s3.S3Storage",
-            "OPTIONS": {
-                # "default_acl": "public-read",
-                "querystring_auth": False,
-                "location": "static",
-            },
-        },
-    }
+    },
+}
 
 AWS_DEFAULT_ACL = None
 AWS_QUERYSTRING_AUTH = False

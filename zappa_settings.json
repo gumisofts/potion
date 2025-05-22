@@ -22,6 +22,16 @@
                 "function": "tasks_handler.tasks.subscriptions_payment",
                 "expression": "rate(1 day)"
             }
+        ],
+        "extra_permissions": [
+            {
+                "Effect": "Allow",
+                "Action": [
+                    "s3:*",
+                    "s3-object-lambda:*"
+                ],
+                "Resource": "*"
+            }
         ]
     },
     "pro": {
