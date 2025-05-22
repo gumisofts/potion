@@ -4,34 +4,39 @@ from uuid import uuid4
 import boto3
 import boto3.exceptions
 from botocore.config import Config
+from botocore.exceptions import ClientError
 from django.conf import settings
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
 from files.models import *
 
-s3 = boto3.client(
-    "s3",
-    aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
-    aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
-    region_name=settings.AWS_S3_REGION_NAME,
-)
-
 
 def get_object_metadata(object_key, bucket_name=settings.AWS_STORAGE_BUCKET_NAME):
-
     try:
+        s3 = boto3.client(
+            "s3",
+            access_key_id=settings.AWS_ACCESS_KEY_ID,
+            aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+            region_name=settings.AWS_S3_REGION_NAME,
+            config=Config(signature_version="s3v4"),
+        )
         response = s3.head_object(Bucket=bucket_name, Key=object_key)
         metadata = {
-            "content_length": response["ContentLength"],  # File size in bytes
-            "content_type": response["ContentType"],  # MIME type
-            "last_modified": response["LastModified"],  # Last modified timestamp
-            "etag": response["ETag"],  # MD5 checksum (quoted)
-            "meta_data": response.get("Metadata", {}),  # Custom metadata (x-amz-meta-*)
+            "content_length": response["ContentLength"],
+            "content_type": response["ContentType"],
+            "last_modified": response["LastModified"],
+            "etag": response["ETag"],
+            "meta_data": response.get("Metadata", {}),
         }
         return metadata
-    except:
-        return
+    except ClientError as e:
+        logger.error(
+            f"S3 ClientError: {e.response['Error']['Code']} - {e.response['Error']['Message']}"
+        )
+    except Exception as e:
+        logger.error(f"Unexpected error: {str(e)}")
+    return None
 
 
 class FileMetaSerializer(serializers.ModelSerializer):
@@ -58,8 +63,8 @@ class FileMetaSerializer(serializers.ModelSerializer):
         return meta_data
 
     def create(self, validated_data):
-        bucket_name = settings.AWS_STORAGE_BUCKET_NAME
-        s3_region = settings.AWS_S3_REGION_NAME
+        bucket_name = os.getenv("AWS_STORAGE_BUCKET_NAME")
+        s3_region = os.getenv("AWS_S3_REGION_NAME", "eu-north-1")
         key = validated_data.get("key")
         return super().create(
             {
