@@ -1,5 +1,6 @@
 from uuid import uuid4
 
+from django.contrib.auth.hashers import check_password, make_password
 from django.core.validators import MinValueValidator
 from django.db import models, transaction
 
@@ -50,7 +51,11 @@ class Wallet(BaseModel):
 
 class Transaction(BaseModel):
     from_wallet = models.ForeignKey(
-        Wallet, on_delete=models.CASCADE, related_name="transactions"
+        Wallet,
+        on_delete=models.CASCADE,
+        related_name="transactions",
+        null=True,
+        blank=True,
     )
     to_wallet = models.ForeignKey(
         Wallet, on_delete=models.CASCADE, null=True, blank=True
@@ -72,3 +77,16 @@ class Transaction(BaseModel):
 
     def __str__(self):
         return f"{self.amount} (Status: {self.status})"
+
+
+class AccessKey(BaseModel):
+    access_id = models.CharField(max_length=255, unique=True)
+    access_secret = models.CharField(max_length=255, unique=True)
+    expires_at = models.DateTimeField(null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        if not self.access_key:
+            self.access_key = str(uuid4().hex)
+
+        self.access_secret = make_password(self.access_secret)
+        super().save(*args, **kwargs)

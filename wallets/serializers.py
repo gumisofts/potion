@@ -73,3 +73,33 @@ class SendMoneyP2PSerializer(Serializer):
         tr = Transaction.objects.create(**validated_data)
 
         return tr
+
+
+class ReceiveMoneyExternalSerializer(Serializer):
+    phone_number = serializers.SlugRelatedField(
+        queryset=User.objects.filter(is_active=True),
+        slug_field="phone_number",
+        write_only=True,
+    )
+    amount = serializers.IntegerField(min_value=10)
+    remarks = serializers.CharField()
+    details = serializers.CharField(read_only=True)
+
+    def validate(self, attrs):
+        attrs = super().validate(attrs)
+
+        amount = attrs.get("amount")
+
+        user = attrs.pop("phone_number")
+
+        wallet = user.wallet
+
+        attrs["to_wallet"] = wallet
+
+        return attrs
+
+    def create(self, validated_data):
+        tr = Transaction.objects.create(**validated_data)
+        tr.details = "success"
+
+        return tr
