@@ -129,6 +129,7 @@ REST_FRAMEWORK = {
         "rest_framework.authentication.SessionAuthentication",
         "rest_framework_simplejwt.authentication.JWTAuthentication",
         "enterprises.authentications.EnterpriseAPIKeyAuthentication",
+        "wallets.authentications.ExternalSysAuthentication",
     ],
     "DEFAULT_PERMISSION_CLASSES": [],
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
@@ -169,7 +170,6 @@ STORAGES = {
     "staticfiles": {
         "BACKEND": "storages.backends.s3.S3Storage",
         "OPTIONS": {
-            # "default_acl": "public-read",
             "querystring_auth": False,
             "location": "static",
         },

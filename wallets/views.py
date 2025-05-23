@@ -3,17 +3,18 @@ from django.shortcuts import render
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework.mixins import CreateModelMixin, ListModelMixin, RetrieveModelMixin
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.viewsets import GenericViewSet
 
 from wallets.models import Wallet
+from wallets.permissions import *
 from wallets.serializers import *
 
 
 class WalletViewsets(RetrieveModelMixin, ListModelMixin, GenericViewSet):
     serializer_class = WalletSerializers
     queryset = Wallet.objects.filter(is_restricted=False, business=None)
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsWalletOwner]
     lookup_field = "user__id"
 
     def get_queryset(self):
@@ -90,3 +91,27 @@ class SendMoneyP2PViewsets(CreateModelMixin, GenericViewSet):
 
 class SendMoneyExternalViewsets(CreateModelMixin, GenericViewSet):
     serializer_class = None
+
+
+class ReceiveMoneyExternalViewsets(CreateModelMixin, GenericViewSet):
+    serializer_class = ReceiveMoneyExternalSerializer
+    permission_classes = [ExternalSysPermission]
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="X-Access-Id",
+                type=OpenApiTypes.STR,
+                required=True,
+                location=OpenApiParameter.HEADER,
+            ),
+            OpenApiParameter(
+                name="X-Access-Secret",
+                type=OpenApiTypes.STR,
+                required=True,
+                location=OpenApiParameter.HEADER,
+            ),
+        ]
+    )
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)

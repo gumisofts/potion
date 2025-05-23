@@ -15,11 +15,11 @@ class EnterpriseAPIKeyAuthentication(BaseAuthentication):
 
         try:
             grant = AccessGrant.objects.get(access_id=access_id)
-        except Enterprise.DoesNotExist:
-            raise AuthenticationFailed("Invalid Access ID")
+        except AccessGrant.DoesNotExist:
+            return
 
         if not check_password(access_secret, grant.access_secret):
-            raise AuthenticationFailed("Invalid Access Secret")
+            return
 
         grant.enterprise.is_authenticated = True
         grant.enterprise.is_enterprise = True

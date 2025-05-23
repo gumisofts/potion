@@ -16,30 +16,32 @@ def update_wallet_balance(sender, instance, created, **kwargs):
 
     if created:
         try:
-            if instance.status == "pending":
+            if instance.status == "pending" and instance.from_wallet:
                 from_wallet = instance.from_wallet
-                to_wallet = instance.to_wallet
-                from_wallet.balance += instance.amount
-                to_wallet.balance -= instance.amount
+                from_wallet.balance -= instance.amount
                 from_wallet.save()
+                Notification.objects.create(
+                    title="Transaction Completed",
+                    content=f"Transfer of amount {instance.amount} ETB has been completed",
+                    user=instance.from_wallet.user,
+                    delivery_method="push",
+                )
+            if instance.status == "pending" and instance.to_wallet:
+                to_wallet = instance.to_wallet
+                to_wallet.balance += instance.amount
                 to_wallet.save()
-                instance.status = "completed"
-                instance.save()
+                from_name = (
+                    instance.from_wallet.user.first_name if instance.from_wallet else ""
+                )
+                Notification.objects.create(
+                    title="Payment Received",
+                    content=f"You have received {instance.amount} ETB from {from_name}",
+                    user=instance.to_wallet.user,
+                    delivery_method="push",
+                )
 
-            recipient_email = None
-
-            Notification.objects.create(
-                title="Transaction Completed",
-                content=f"Transfer of amount {instance.amount} ETB has been completed",
-                user=instance.from_wallet.user,
-                delivery_method="push",
-            )
-            Notification.objects.create(
-                title="Payment Received",
-                content=f"You have received {instance.amount} ETB from {instance.from_wallet.user.phone_number}",
-                user=instance.to_wallet.user,
-                delivery_method="push",
-            )
+            instance.status = "completed"
+            instance.save()
 
         except Exception as e:
             logger.error(f"Failed to process transaction {instance.id}: {str(e)}")
