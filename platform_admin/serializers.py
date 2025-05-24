@@ -96,6 +96,8 @@ class TransactionRecordSerializer(serializers.ModelSerializer):
         fields = ["id", "from_user", "to_user", "amount", "status", "remarks", "date"]
 
     def get_from_user(self, obj):
+        if not obj.from_wallet:
+            return "external"
         if obj.from_wallet.user:
             return str(obj.from_wallet.user.id)
         elif obj.from_wallet.business:
