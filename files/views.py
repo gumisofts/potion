@@ -3,7 +3,12 @@ from uuid import uuid4
 
 from django.conf import settings
 from django.shortcuts import get_object_or_404
-from rest_framework.mixins import CreateModelMixin, DestroyModelMixin, ListModelMixin
+from rest_framework.mixins import (
+    CreateModelMixin,
+    DestroyModelMixin,
+    ListModelMixin,
+    RetrieveModelMixin,
+)
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -19,7 +24,11 @@ class SignUrlViewset(CreateModelMixin, GenericViewSet):
 
 
 class FileMetaDataViewset(
-    CreateModelMixin, ListModelMixin, DestroyModelMixin, GenericViewSet
+    CreateModelMixin,
+    ListModelMixin,
+    DestroyModelMixin,
+    RetrieveModelMixin,
+    GenericViewSet,
 ):
     serializer_class = FileMetaSerializer
     permission_classes = [IsAuthenticated]
