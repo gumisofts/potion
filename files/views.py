@@ -26,7 +26,6 @@ class SignUrlViewset(CreateModelMixin, GenericViewSet):
 class FileMetaDataViewset(
     CreateModelMixin,
     ListModelMixin,
-    DestroyModelMixin,
     RetrieveModelMixin,
     GenericViewSet,
 ):
