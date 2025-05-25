@@ -120,7 +120,6 @@ class UserGrantViewset(ListModelMixin, UpdateModelMixin, GenericViewSet):
 
     @extend_schema(
         parameters=[
-            OpenApiParameter(name="user_id", type=OpenApiTypes.UUID, required=False),
             OpenApiParameter(name="status", type=OpenApiTypes.STR, required=False),
             OpenApiParameter(
                 name="expires_at_gte", type=OpenApiTypes.DATETIME, required=False
