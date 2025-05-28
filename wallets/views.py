@@ -19,6 +19,8 @@ class WalletViewsets(RetrieveModelMixin, ListModelMixin, GenericViewSet):
 
     def get_queryset(self):
         queryset = super().get_queryset()
+        # Only show user's own wallet
+        queryset = queryset.filter(user=self.request.user)
 
         user_id = self.request.query_params.get("user_id")
         phone_number = self.request.query_params.get("phone_number")
@@ -29,6 +31,12 @@ class WalletViewsets(RetrieveModelMixin, ListModelMixin, GenericViewSet):
             queryset = queryset.filter(user__phone_number=phone_number)
 
         return queryset
+
+    def get_object(self):
+        obj = super().get_object()
+        if obj.user != self.request.user:
+            self.permission_denied(self.request, message="Wallet not found")
+        return obj
 
 
 class WalletPublicViewset(ListModelMixin, GenericViewSet):

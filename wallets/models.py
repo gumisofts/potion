@@ -85,7 +85,7 @@ class AccessKey(BaseModel):
     expires_at = models.DateTimeField(null=True, blank=True)
 
     def save(self, *args, **kwargs):
-        if not self.access_key:
+        if not self.access_id:
             self.access_key = str(uuid4().hex)
 
         self.access_secret = make_password(self.access_secret)

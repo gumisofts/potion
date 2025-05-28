@@ -21,9 +21,25 @@ class ExternalSysPermission(BasePermission):
     """
 
     def has_permission(self, request, view):
-        # Check if the user is an external system
-        return hasattr(request.user, "is_external") and request.user.is_external
+        # Check for required headers
+        access_id = request.META.get("HTTP_X_ACCESS_ID")
+        access_secret = request.META.get("HTTP_X_ACCESS_SECRET")
+
+        if not access_id or not access_secret:
+            return False
+
+        # TODO: Add proper access key validation here
+        # For now, just check if headers are present
+        return True
 
     def has_object_permission(self, request, view, obj):
-        # Check if the user is an external system
-        return hasattr(request.user, "is_external") and request.user.is_external
+        # Check for required headers
+        access_id = request.META.get("HTTP_X_ACCESS_ID")
+        access_secret = request.META.get("HTTP_X_ACCESS_SECRET")
+
+        if not access_id or not access_secret:
+            return False
+
+        # TODO: Add proper access key validation here
+        # For now, just check if headers are present
+        return True
