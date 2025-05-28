@@ -1,13 +1,13 @@
+from datetime import timedelta
+
 from django.contrib.auth import get_user_model
 from django.urls import reverse
-from rest_framework import status
-from rest_framework.test import APITestCase
-from rest_framework.test import APIClient
 from django.utils import timezone
-from datetime import timedelta
-from core.utils import generate_secure_six_digits, hash256
+from rest_framework import status
+from rest_framework.test import APIClient, APITestCase
 
-from accounts.models import Business, Service, VerificationCode, TemporaryCode
+from accounts.models import Business, Service, TemporaryCode, VerificationCode
+from core.utils import generate_secure_six_digits, hash256
 
 User = get_user_model()
 

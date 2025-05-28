@@ -3,13 +3,13 @@ from datetime import datetime, timedelta
 
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
+from django.utils import timezone
 
 from core.utils import *
 from wallets.models import Wallet
 
 from .dispatch import *
 from .models import Business, TemporaryCode, User, VerificationCode
-from django.utils import timezone
 
 logger = logging.getLogger(__name__)
 
@@ -31,7 +31,6 @@ def create_business_wallet(sender, instance, created, **kwargs):
 
 @receiver(user_registered, sender=User)
 def upon_registration(sender, instance, method, **kwargs):
-
 
     code = str(generate_secure_six_digits())
 

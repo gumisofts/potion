@@ -22,7 +22,15 @@ router.register(
 )
 router.register("users", UsersViewset, basename="users")
 router.register("login", LoginViewset, basename="login")
-router.register("password-reset/request", RequestPasswordResetViewset, basename="password-reset-request")
-router.register("password-reset/confirm", ConfirmPasswordResetViewset, basename="password-reset-confirm")
+router.register(
+    "password-reset/request",
+    RequestPasswordResetViewset,
+    basename="password-reset-request",
+)
+router.register(
+    "password-reset/confirm",
+    ConfirmPasswordResetViewset,
+    basename="password-reset-confirm",
+)
 # Register Viewsets here
 urlpatterns = router.urls + []

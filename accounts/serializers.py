@@ -1,12 +1,12 @@
 from datetime import datetime, timedelta
 from uuid import UUID
-from django.utils import timezone
 
 from django.contrib.auth import authenticate, password_validation
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 from rest_framework import exceptions, serializers, validators
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
