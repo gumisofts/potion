@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from uuid import UUID
+from django.utils import timezone
 
 from django.contrib.auth import authenticate, password_validation
 from django.contrib.auth.password_validation import validate_password
@@ -205,3 +206,83 @@ class CategoriesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         exclude = []
+
+
+class RequestPasswordResetSerializer(serializers.Serializer):
+    phone_number = serializers.CharField(write_only=True)
+    detail = serializers.CharField(read_only=True)
+
+    def validate_phone_number(self, value):
+        phone_number = User.normalize_phone_number(value)
+        if not User.objects.filter(phone_number=phone_number, is_active=True).exists():
+            raise serializers.ValidationError("No user found with this phone number")
+        return phone_number
+
+    def create(self, validated_data):
+        phone_number = validated_data.get("phone_number")
+        user = User.objects.get(phone_number=phone_number)
+
+        # Generate a new verification code
+        token = generate_secure_six_digits()
+        VerificationCode.objects.create(
+            expires_at=timezone.now() + timedelta(minutes=5),
+            token=token,
+            code_type=1,  # Using PHONE type
+            user=user,
+        )
+        TemporaryCode.objects.create(code=token, phone_number=phone_number)
+
+        return {"detail": "Password reset code has been sent to your phone number"}
+
+
+class ConfirmPasswordResetSerializer(serializers.Serializer):
+    code = serializers.CharField(write_only=True)
+    user_id = serializers.UUIDField(write_only=True)
+    new_password = serializers.CharField(write_only=True)
+    detail = serializers.CharField(read_only=True)
+
+    def validate(self, attrs):
+        attrs = super().validate(attrs)
+        code = attrs.get("code")
+        user_id = attrs.get("user_id")
+        new_password = attrs.get("new_password")
+
+        # First validate the new password
+        try:
+            user = User.objects.get(id=user_id)
+            password_validation.validate_password(new_password, user)
+        except User.DoesNotExist:
+            raise serializers.ValidationError({"user_id": "User not found"})
+        except ValidationError as e:
+            raise serializers.ValidationError({"new_password": e})
+
+        # Then validate the verification code
+        queryset = VerificationCode.objects.filter(
+            user__id=user_id,
+            code_type=1,  # PHONE type
+            is_used=False,
+            expires_at__gt=timezone.now(),  # Check if code is not expired
+        )
+        try:
+            instance = queryset.get(token=hash256(code))
+            attrs["verification_code"] = instance
+            attrs["user"] = user
+        except VerificationCode.DoesNotExist:
+            raise serializers.ValidationError({"code": "Invalid or expired code"})
+
+        return attrs
+
+    def create(self, validated_data):
+        verification_code = validated_data.pop("verification_code")
+        new_password = validated_data.pop("new_password")
+        user = validated_data.pop("user")
+
+        # Update user's password
+        user.set_password(new_password)
+        user.save()
+
+        # Mark verification code as used
+        verification_code.is_used = True
+        verification_code.save()
+
+        return {"detail": "Password has been reset successfully"}

@@ -2,8 +2,12 @@ from django.contrib.auth import get_user_model
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
+from rest_framework.test import APIClient
+from django.utils import timezone
+from datetime import timedelta
+from core.utils import generate_secure_six_digits, hash256
 
-from accounts.models import Business, Service
+from accounts.models import Business, Service, VerificationCode, TemporaryCode
 
 User = get_user_model()
 
@@ -108,3 +112,103 @@ class BusinessViewsetTests(APITestCase):
 #         url = reverse("business-services-detail", args=[self.service.id])
 #         response = self.client.get(url)
 #         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+class PasswordResetTests(APITestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            phone_number="912345678",
+            password="testpass123",
+            first_name="Test",
+            user_type="user",
+            is_phone_verified=True,
+        )
+        self.client = APIClient()
+
+    def test_request_password_reset(self):
+        """Test requesting a password reset code"""
+        url = reverse("password-reset-request-list")
+        data = {"phone_number": "912345678"}
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertIn("detail", response.data)
+
+        # Verify verification code was created
+        self.assertTrue(
+            VerificationCode.objects.filter(
+                user=self.user, code_type=1, is_used=False
+            ).exists()
+        )
+
+    def test_request_password_reset_invalid_phone(self):
+        """Test requesting password reset with invalid phone number"""
+        url = reverse("password-reset-request-list")
+        data = {"phone_number": "999999999"}
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("phone_number", response.data)
+
+    def test_confirm_password_reset(self):
+        """Test confirming password reset with valid code"""
+        # Create a verification code
+        token = generate_secure_six_digits()
+        verification_code = VerificationCode.objects.create(
+            user=self.user,
+            token=token,
+            expires_at=timezone.now() + timedelta(minutes=5),
+            code_type=1,
+        )
+        TemporaryCode.objects.create(code=token, phone_number=self.user.phone_number)
+
+        url = reverse("password-reset-confirm-list")
+        data = {
+            "code": token,
+            "user_id": str(self.user.id),
+            "new_password": "newpass123",
+        }
+        response = self.client.post(url, data)
+
+        print(response.data)  # Debugging line to see response data
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertIn("detail", response.data)
+
+        # Verify password was changed
+        self.user.refresh_from_db()
+        self.assertTrue(self.user.check_password("newpass123"))
+
+        # Verify verification code was marked as used
+        verification_code.refresh_from_db()
+        self.assertTrue(verification_code.is_used)
+
+    def test_confirm_password_reset_invalid_code(self):
+        """Test confirming password reset with invalid code"""
+        url = reverse("password-reset-confirm-list")
+        data = {
+            "code": "123456",
+            "user_id": str(self.user.id),
+            "new_password": "newpass123",
+        }
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_confirm_password_reset_invalid_password(self):
+        """Test confirming password reset with invalid new password"""
+        # Create a verification code
+        token = generate_secure_six_digits()
+        VerificationCode.objects.create(
+            user=self.user,
+            token=hash256(token),
+            expires_at=timezone.now() + timedelta(minutes=5),
+            code_type=1,
+        )
+        TemporaryCode.objects.create(code=token, phone_number=self.user.phone_number)
+
+        url = reverse("password-reset-confirm-list")
+        data = {
+            "code": token,
+            "user_id": str(self.user.id),
+            "new_password": "123",  # Too short password
+        }
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("new_password", response.data)

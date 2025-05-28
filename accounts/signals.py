@@ -9,6 +9,7 @@ from wallets.models import Wallet
 
 from .dispatch import *
 from .models import Business, TemporaryCode, User, VerificationCode
+from django.utils import timezone
 
 logger = logging.getLogger(__name__)
 
@@ -31,8 +32,6 @@ def create_business_wallet(sender, instance, created, **kwargs):
 @receiver(user_registered, sender=User)
 def upon_registration(sender, instance, method, **kwargs):
 
-    print("Generating Verification Codes...")
-    print(kwargs)
 
     code = str(generate_secure_six_digits())
 
@@ -41,7 +40,7 @@ def upon_registration(sender, instance, method, **kwargs):
         VerificationCode.objects.create(
             user=instance,
             token=code,
-            expires_at=datetime.now() + timedelta(minutes=5),
+            expires_at=timezone.now() + timedelta(minutes=5),
             code_type=2,
         )
 
@@ -49,7 +48,7 @@ def upon_registration(sender, instance, method, **kwargs):
         VerificationCode.objects.create(
             user=instance,
             token=code,
-            expires_at=datetime.now() + timedelta(minutes=5),
+            expires_at=timezone.now() + timedelta(minutes=5),
             code_type=1,
         )
         TemporaryCode.objects.create(phone_number=instance.phone_number, code=code)

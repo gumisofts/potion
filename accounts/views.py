@@ -171,3 +171,36 @@ class UserDeviceViewset(
 class CategoriesViewset(ListModelMixin, GenericViewSet):
     serializer_class = CategoriesSerializer
     queryset = Category.objects.all()
+
+
+class RequestPasswordResetViewset(CreateModelMixin, GenericViewSet):
+    serializer_class = RequestPasswordResetSerializer
+    permission_classes = []
+
+    @extend_schema(
+        description="Request a password reset code to be sent to the user's phone number",
+        responses={
+            201: OpenApiTypes.OBJECT,
+            400: OpenApiTypes.OBJECT,
+        },
+    )
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)
+
+
+class ConfirmPasswordResetViewset(CreateModelMixin, GenericViewSet):
+    serializer_class = ConfirmPasswordResetSerializer
+    permission_classes = []
+
+    @extend_schema(
+        description="Confirm password reset using the code sent to the user's phone",
+        responses={
+            201: OpenApiTypes.OBJECT,
+            400: OpenApiTypes.OBJECT,
+        },
+    )
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)
+
+
+# Write A view To reset
