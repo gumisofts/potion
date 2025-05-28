@@ -19,6 +19,16 @@ class SubscribeViewsets(CreateModelMixin, ListModelMixin, GenericViewSet):
 
     def get_queryset(self):
         queryset = self.queryset.filter(user=self.request.user)
+        subscription_id = self.request.query_params.get("subscription_id")
+        next_billing_date_gt = self.request.query_params.get("next_billing_date_gt")
+        next_billing_date_lt = self.request.query_params.get("next_billing_date_lt")
+        if subscription_id:
+            queryset = queryset.filter(subscription=subscription_id)
+        if next_billing_date_gt:
+            queryset = queryset.filter(next_billing_date__gt=next_billing_date_gt)
+        if next_billing_date_lt:
+            queryset = queryset.filter(next_billing_date__lt=next_billing_date_lt)
+
         return queryset
 
     @extend_schema(
@@ -33,6 +43,12 @@ class SubscribeViewsets(CreateModelMixin, ListModelMixin, GenericViewSet):
                 name="next_billing_date_gt",
                 type=OpenApiTypes.DATETIME,
                 description="next billing date greater than",
+                required=False,
+            ),
+            OpenApiParameter(
+                name="next_billing_date_lt",
+                type=OpenApiTypes.DATETIME,
+                description="next billing date less than",
                 required=False,
             ),
         ],
@@ -110,7 +126,49 @@ class UserSubscriptionViewset(ListModelMixin, GenericViewSet):
 
     @extend_schema(
         parameters=[
-            OpenApiParameter(name="is_active", required=False, type=OpenApiTypes.BOOL)
+            OpenApiParameter(name="is_active", required=False, type=OpenApiTypes.BOOL),
+            OpenApiParameter(
+                name="next_billing_date_gt",
+                type=OpenApiTypes.DATETIME,
+                description="next billing date greater than",
+                required=False,
+            ),
+            OpenApiParameter(
+                name="next_billing_date_lt",
+                type=OpenApiTypes.DATETIME,
+                description="next billing date less than",
+                required=False,
+            ),
+            OpenApiParameter(
+                name="subscription_id",
+                type=OpenApiTypes.INT,
+                description="Subscription ID",
+                required=False,
+            ),
+            OpenApiParameter(
+                name="user_id",
+                type=OpenApiTypes.UUID,
+                description="User ID",
+                required=False,
+            ),
+            OpenApiParameter(
+                name="service_id",
+                type=OpenApiTypes.UUID,
+                description="Service ID",
+                required=False,
+            ),
+            OpenApiParameter(
+                name="business_id",
+                type=OpenApiTypes.UUID,
+                description="Business ID",
+                required=False,
+            ),
+            OpenApiParameter(
+                name="service_type",
+                type=OpenApiTypes.STR,
+                description="Service Type",
+                required=False,
+            ),
         ]
     )
     def list(self, request, *args, **kwargs):
@@ -125,5 +183,26 @@ class UserSubscriptionViewset(ListModelMixin, GenericViewSet):
             queryset = queryset.filter(is_active=is_active)
 
         queryset = queryset.filter(user=self.request.user)
+        next_billing_date_gt = self.request.query_params.get("next_billing_date_gt")
+        next_billing_date_lt = self.request.query_params.get("next_billing_date_lt")
+        subscription_id = self.request.query_params.get("subscription_id")
+        user_id = self.request.query_params.get("user_id")
+        service_id = self.request.query_params.get("service_id")
+        business_id = self.request.query_params.get("business_id")
+        service_type = self.request.query_params.get("service_type")
+        if next_billing_date_gt:
+            queryset = queryset.filter(next_billing_date__gt=next_billing_date_gt)
+        if next_billing_date_lt:
+            queryset = queryset.filter(next_billing_date__lt=next_billing_date_lt)
+        if subscription_id:
+            queryset = queryset.filter(subscription=subscription_id)
+        if user_id:
+            queryset = queryset.filter(user__id=user_id)
+        if service_id:
+            queryset = queryset.filter(subscription__service=service_id)
+        if business_id:
+            queryset = queryset.filter(subscription__service__business=business_id)
+        if service_type:
+            queryset = queryset.filter(subscription__service_type=service_type)
 
         return queryset

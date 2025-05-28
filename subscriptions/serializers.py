@@ -60,3 +60,13 @@ class SubscriptionSerializer(ModelSerializer):
         subs.features.set(features)
 
         return subs
+
+    def update(self, instance, validated_data):
+        features = []
+        for feature in validated_data.pop("features", []):
+            _, created = SubscriptionFeature.objects.get_or_create(**feature)
+            features.append(_)
+
+        instance = super().update(instance, validated_data)
+        instance.features.set(features)
+        return instance
