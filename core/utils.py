@@ -26,7 +26,7 @@ def generate_string():
 
 
 def hash256(msg):
-    return hashlib.sha256(str.encode(msg)).hexdigest()
+    return hashlib.sha256(str.encode(str(msg))).hexdigest()
 
 
 def hmac_sha256(msg):
