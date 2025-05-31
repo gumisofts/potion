@@ -215,9 +215,9 @@ jobs:
           mkdir .aws
           cd .aws
           echo "[potion]" >> credentials
-          echo "aws_access_key_id = ${{ secrets.AWS_ACCESS_KEY_ID }}" >> credentials
-          echo "aws_secret_access_key = ${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> credentials
-          echo "region = ${{ vars.AWS_S3_REGION_NAME }}" >> credentials
+          echo "aws_access_key_id = ${{ secrets.AWS_CLOUD_ACCESS_KEY_ID }}" >> credentials
+          echo "aws_secret_access_key = ${{ secrets.AWS_CLOUD_SECRET_ACCESS_KEY }}" >> credentials
+          echo "region = ${{ vars.AWS_CLOUD_S3_REGION_NAME }}" >> credentials
 
       - name: Deploy with Zappa
         run: |
