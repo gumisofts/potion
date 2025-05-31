@@ -149,6 +149,8 @@ jobs:
           echo "GOOGLE_APPLICATION_CLIENT_EMAIL=${{vars.GOOGLE_APPLICATION_CLIENT_EMAIL}}" >> .env
           echo "GOOGLE_APPLICATION_CREDENTIALS_CLIENT_ID=${{vars.GOOGLE_APPLICATION_CREDENTIALS_CLIENT_ID}}" >> .env
           echo "GOOGLE_APPLICATION_CREDENTIALS_CERT_URL=${{vars.GOOGLE_APPLICATION_CREDENTIALS_CERT_URL}}" >> .env
+          echo "EXTERNAL_ACCESS_SECRET=${{secrets.EXTERNAL_ACCESS_SECRET}}" >> .env
+          echo "EXTERNAL_ACCESS_ID=${{secrets.EXTERNAL_ACCESS_ID}}" >> .env
 
       - name: Copy AWS Credentials
         run: |

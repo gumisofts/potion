@@ -9,6 +9,7 @@ class EnterpriseAPIKeyAuthentication(BaseAuthentication):
     def authenticate(self, request):
         access_id = request.headers.get("X-Access-Id")
         access_secret = request.headers.get("X-Access-Secret")
+        print("heleloo")
 
         if not access_id or not access_secret:
             return None
