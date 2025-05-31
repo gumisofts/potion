@@ -163,7 +163,7 @@ class PasswordResetTests(APITestCase):
         url = reverse("password-reset-confirm-list")
         data = {
             "code": token,
-            "user_id": str(self.user.id),
+            "phone_number": str(self.user.phone_number),
             "new_password": "newpass123",
         }
         response = self.client.post(url, data)
@@ -206,7 +206,7 @@ class PasswordResetTests(APITestCase):
         url = reverse("password-reset-confirm-list")
         data = {
             "code": token,
-            "user_id": str(self.user.id),
+            "phone_number": str(self.user.phone_number),
             "new_password": "123",  # Too short password
         }
         response = self.client.post(url, data)

@@ -39,6 +39,23 @@ class WalletViewsets(RetrieveModelMixin, ListModelMixin, GenericViewSet):
         return obj
 
 
+class WalletViewsetBusiness(RetrieveModelMixin, ListModelMixin, GenericViewSet):
+    serializer_class = WalletSerializers
+    queryset = Wallet.objects.filter(is_restricted=False, user=None)
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        # Only show business wallets
+        queryset = queryset.filter(business__in=[self.request.user.businesses])
+        user_id = self.request.query_params.get("user_id")
+        phone_number = self.request.query_params.get("phone_number")
+        if user_id:
+            queryset = queryset.filter(user=user_id)
+        if phone_number:
+            queryset = queryset.filter(user__phone_number=phone_number)
+        return queryset
+
+
 class WalletPublicViewset(ListModelMixin, GenericViewSet):
     serializer_class = WalletPublicSerializer
     queryset = Wallet.objects.filter(is_restricted=False)

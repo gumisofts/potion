@@ -237,19 +237,22 @@ class RequestPasswordResetSerializer(serializers.Serializer):
 
 class ConfirmPasswordResetSerializer(serializers.Serializer):
     code = serializers.CharField(write_only=True)
-    user_id = serializers.UUIDField(write_only=True)
+    phone_number = serializers.SlugRelatedField(
+        slug_field="phone_number",
+        write_only=True,
+        queryset=User.objects.filter(is_active=True, is_phone_verified=True),
+    )
     new_password = serializers.CharField(write_only=True)
     detail = serializers.CharField(read_only=True)
 
     def validate(self, attrs):
         attrs = super().validate(attrs)
         code = attrs.get("code")
-        user_id = attrs.get("user_id")
+        user = attrs.get("phone_number")
         new_password = attrs.get("new_password")
 
         # First validate the new password
         try:
-            user = User.objects.get(id=user_id)
             password_validation.validate_password(new_password, user)
         except User.DoesNotExist:
             raise serializers.ValidationError({"user_id": "User not found"})
@@ -258,7 +261,7 @@ class ConfirmPasswordResetSerializer(serializers.Serializer):
 
         # Then validate the verification code
         queryset = VerificationCode.objects.filter(
-            user__id=user_id,
+            user=user,
             code_type=1,  # PHONE type
             is_used=False,
             expires_at__gt=timezone.now(),  # Check if code is not expired
