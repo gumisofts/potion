@@ -42,6 +42,7 @@ class WalletViewsets(RetrieveModelMixin, ListModelMixin, GenericViewSet):
 class WalletViewsetBusiness(RetrieveModelMixin, ListModelMixin, GenericViewSet):
     serializer_class = WalletSerializers
     queryset = Wallet.objects.filter(is_restricted=False, user=None)
+    lookup_field = "business__id"
 
     def get_queryset(self):
         queryset = super().get_queryset()
