@@ -135,11 +135,11 @@ jobs:
           echo "EMAIL_HOST=${{ vars.EMAIL_HOST }}" >> .env
           echo "EMAIL_PORT=${{ vars.EMAIL_PORT }}" >> .env
           echo "EMAIL_HOST_USER=${{ vars.EMAIL_HOST_USER }}" >> .env
-          echo "AWS_CLOUD_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> .env
-          echo "AWS_CLOUD_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> .env
-          echo "AWS_CLOUD_DEFAULT_REGION=${{vars.AWS_S3_REGION_NAME}}" >> .env
-          echo "AWS_CLOUD_STORAGE_BUCKET_NAME=${{vars.AWS_STORAGE_BUCKET_NAME}}" >> .env
-          echo "AWS_CLOUD_S3_REGION_NAME=${{vars.AWS_S3_REGION_NAME}}" >> .env
+          echo "AWS_CLOUD_ACCESS_KEY_ID=${{ secrets.AWS_CLOUD_ACCESS_KEY_ID }}" >> .env
+          echo "AWS_CLOUD_SECRET_ACCESS_KEY=${{ secrets.AWS_CLOUD_SECRET_ACCESS_KEY }}" >> .env
+          echo "AWS_CLOUD_DEFAULT_REGION=${{vars.AWS_CLOUD_S3_REGION_NAME}}" >> .env
+          echo "AWS_CLOUD_STORAGE_BUCKET_NAME=${{vars.AWS_CLOUD_STORAGE_BUCKET_NAME}}" >> .env
+          echo "AWS_CLOUD_S3_REGION_NAME=${{vars.AWS_CLOUD_S3_REGION_NAME}}" >> .env
           echo "STATIC_URL=${{vars.STATIC_URL}}" >> .env
           echo "ALLOWED_HOSTS=${{vars.ALLOWED_HOSTS}}" >> .env
           echo "CORS_ALLOWED_ORIGINS=${{vars.CORS_ALLOWED_ORIGINS}}" >> .env
