@@ -12,13 +12,10 @@ from rest_framework.exceptions import ValidationError
 from files.models import *
 
 
-def get_object_metadata(object_key, bucket_name=settings.AWS_STORAGE_BUCKET_NAME):
+def get_object_metadata(object_key, bucket_name=settings.AWS_CLOUD_STORAGE_BUCKET_NAME):
     try:
         s3 = boto3.client(
             "s3",
-            aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
-            aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
-            region_name=settings.AWS_S3_REGION_NAME,
             config=Config(signature_version="s3v4"),
         )
         response = s3.head_object(Bucket=bucket_name, Key=object_key)
@@ -63,8 +60,8 @@ class FileMetaSerializer(serializers.ModelSerializer):
         return meta_data
 
     def create(self, validated_data):
-        bucket_name = os.getenv("AWS_STORAGE_BUCKET_NAME")
-        s3_region = os.getenv("AWS_S3_REGION_NAME", "eu-north-1")
+        bucket_name = os.getenv("AWS_CLOUD_STORAGE_BUCKET_NAME")
+        s3_region = os.getenv("AWS_CLOUD_S3_REGION_NAME", "eu-north-1")
         key = validated_data.get("key")
         return super().create(
             {
@@ -97,9 +94,9 @@ class SignedURLSerializer(serializers.Serializer):
     def create(self, validated_data):
         s3_client = boto3.client(
             "s3",
-            aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
-            aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
-            region_name=settings.AWS_S3_REGION_NAME,
+            aws_access_key_id=settings.AWS_CLOUD_ACCESS_KEY_ID,
+            aws_secret_access_key=settings.AWS_CLOUD_SECRET_ACCESS_KEY,
+            region_name=settings.AWS_CLOUD_S3_REGION_NAME,
             config=Config(signature_version="s3v4"),
         )
         file_id = uuid4()
@@ -114,7 +111,7 @@ class SignedURLSerializer(serializers.Serializer):
         signed_url = s3_client.generate_presigned_url(
             "put_object",
             Params={
-                "Bucket": settings.AWS_STORAGE_BUCKET_NAME,
+                "Bucket": settings.AWS_CLOUD_STORAGE_BUCKET_NAME,
                 "Key": file_path,
                 "ContentType": contentType,
             },
