@@ -16,6 +16,9 @@ def get_object_metadata(object_key, bucket_name=settings.AWS_STORAGE_BUCKET_NAME
     try:
         s3 = boto3.client(
             "s3",
+            aws_access_key_id=settings.AWS_CLOUD_ACCESS_KEY_ID,
+            aws_secret_access_key=settings.AWS_CLOUD_SECRET_ACCESS_KEY,
+            region_name=settings.AWS_CLOUD_S3_REGION_NAME,
             config=Config(signature_version="s3v4"),
         )
         response = s3.head_object(Bucket=bucket_name, Key=object_key)

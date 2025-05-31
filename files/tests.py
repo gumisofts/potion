@@ -72,7 +72,6 @@ class FileMetaDataViewsetTest(APITestCase):
         payload = {"key": "uploads/string.jpeg"}
         response = self.client.post(self.url, payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        print(response.data)  # Debugging output
         self.assertIn("key", response.data)
         self.assertIn("public_url", response.data)
 
