@@ -27,10 +27,14 @@
             {
                 "Effect": "Allow",
                 "Action": [
-                    "s3:*",
-                    "s3-object-lambda:*"
+                    "s3:GetObject",
+                    "s3:PutObject",
+                    "s3:ListBucket"
                 ],
-                "Resource": "*"
+                "Resource": [
+                    "arn:aws:s3:::potion-dev-v01",
+                    "arn:aws:s3:::potion-dev-v01/*"
+                ]
             }
         ]
     },
