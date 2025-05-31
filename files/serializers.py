@@ -12,7 +12,7 @@ from rest_framework.exceptions import ValidationError
 from files.models import *
 
 
-def get_object_metadata(object_key, bucket_name=settings.AWS_CLOUD_STORAGE_BUCKET_NAME):
+def get_object_metadata(object_key, bucket_name=settings.AWS_STORAGE_BUCKET_NAME):
     try:
         s3 = boto3.client(
             "s3",
