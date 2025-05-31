@@ -16,6 +16,9 @@ from core.models import BaseModel
 class SubscriptionFeature(BaseModel):
     content = models.CharField(max_length=255)
 
+    def __str__(self):
+        return self.content
+
 
 class Subscription(BaseModel):
     name = models.CharField(max_length=255)

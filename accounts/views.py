@@ -64,6 +64,29 @@ class UsersViewset(ListModelMixin, RetrieveModelMixin, GenericViewSet):
         return super().list(request, *args, **kwargs)
 
 
+class UserProfileViewset(RetrieveModelMixin, UpdateModelMixin, GenericViewSet):
+
+    serializer_class = UserProfileSerializer
+    permission_classes = [UsersOwnProfilePermission]
+    queryset = User.objects.filter(is_active=True)
+
+    def get_object(self):
+        return self.request.user
+
+    @extend_schema(
+        description="Retrieve or update the authenticated user's profile",
+        responses={
+            200: UserProfileSerializer,
+            400: OpenApiTypes.OBJECT,
+        },
+    )
+    def retrieve(self, request, *args, **kwargs):
+        return super().retrieve(request, *args, **kwargs)
+
+    def update(self, request, *args, **kwargs):
+        return super().update(request, *args, **kwargs)
+
+
 class VerificationCodeViewset(CreateModelMixin, GenericViewSet):
     serializer_class = CreateVerificationCodeSerializer
 

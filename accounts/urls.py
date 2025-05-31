@@ -20,6 +20,7 @@ router.register("services", BusinessServiceViewset, basename="business-services"
 router.register(
     "verifications/resend", VerificationCodeResendViewset, basename="users-resend-code"
 )
+router.register("users/profile", UserProfileViewset, basename="users-profile")
 router.register("users", UsersViewset, basename="users")
 router.register("login", LoginViewset, basename="login")
 router.register(

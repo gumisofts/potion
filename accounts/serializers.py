@@ -286,3 +286,9 @@ class ConfirmPasswordResetSerializer(serializers.Serializer):
         verification_code.save()
 
         return {"detail": "Password has been reset successfully"}
+
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        exclude = ["groups", "user_permissions", "is_superuser", "is_staff", "password"]
