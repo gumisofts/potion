@@ -117,7 +117,7 @@ class SendMoneyP2PViewsets(CreateModelMixin, GenericViewSet):
 
 class SendMoneyExternalViewsets(CreateModelMixin, GenericViewSet):
     serializer_class = SendMoneyExternalSerializer
-    permission_classes = [IsWalletOwner]
+    permission_classes = [IsAuthenticated]
 
 
 class ReceiveMoneyExternalViewsets(CreateModelMixin, GenericViewSet):

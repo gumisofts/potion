@@ -128,6 +128,11 @@ class SendMoneyExternalSerializer(Serializer):
         if wallet.balance < amount:
             raise ValidationError({"amount": ["not enough amount in the wallet"]}, 400)
 
+        if wallet != self.context.get("request").user.wallet:
+            raise ValidationError(
+                {"from_wallet": ["You can only send money from your own wallet"]}, 400
+            )
+
         # Sending money to external bank
 
         acc = attrs.pop("account_number", None)
