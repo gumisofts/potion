@@ -25,6 +25,7 @@ def update_wallet_balance(sender, instance, created, **kwargs):
                     content=f"Transfer of amount {instance.amount} ETB has been completed",
                     user=instance.from_wallet.user,
                     delivery_method="push",
+                    transaction_id=instance.id,
                 )
             if instance.status == "pending" and instance.to_wallet:
                 to_wallet = instance.to_wallet
@@ -38,6 +39,7 @@ def update_wallet_balance(sender, instance, created, **kwargs):
                     content=f"You have received {instance.amount} ETB from {from_name}",
                     user=instance.to_wallet.user,
                     delivery_method="push",
+                    transaction_id=instance.id,
                 )
 
             instance.status = "completed"

@@ -29,3 +29,5 @@ class Notification(BaseModel):
     delivery_method = models.CharField(
         max_length=255, choices=[("inApp", "inApp"), ("push", "push")], default="inApp"
     )
+
+    transaction_id = models.UUIDField(blank=True, null=True)
