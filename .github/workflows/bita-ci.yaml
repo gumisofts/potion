@@ -205,6 +205,8 @@ jobs:
           echo "STATIC_URL=${{vars.STATIC_URL}}" >> .env
           echo "ALLOWED_HOSTS=${{vars.ALLOWED_HOSTS}}" >> .env
           echo "CORS_ALLOWED_ORIGINS=${{vars.CORS_ALLOWED_ORIGINS}}" >> .env
+          echo "EXTERNAL_ACCESS_SECRET=${{secrets.EXTERNAL_ACCESS_SECRET}}" >> .env
+          echo "EXTERNAL_ACCESS_ID=${{secrets.EXTERNAL_ACCESS_ID}}" >> .env
       - name: Copy AWS Credentials
         run: |
           cd ~/

@@ -98,7 +98,8 @@ class SendMoneyP2PViewsets(CreateModelMixin, GenericViewSet):
 
 
 class SendMoneyExternalViewsets(CreateModelMixin, GenericViewSet):
-    serializer_class = None
+    serializer_class = SendMoneyExternalSerializer
+    permission_classes = []
 
 
 class ReceiveMoneyExternalViewsets(CreateModelMixin, GenericViewSet):

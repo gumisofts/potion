@@ -227,3 +227,42 @@ class ConfirmPasswordResetViewset(CreateModelMixin, GenericViewSet):
 
 
 # Write A view To reset
+
+
+class BusinessUsersViewset(ListModelMixin, GenericViewSet):
+    serializer_class = BusinessUserSerializer
+    queryset = User.objects.all()
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        queryset = self.queryset
+
+        business_id = self.request.GET.get("business_id")
+        user_id = self.request.GET.get("user_id")
+
+        if business_id:
+            queryset = queryset.filter(business=business_id)
+
+        if user_id:
+            queryset = queryset.filter(user=user_id)
+
+        return queryset
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="business_id",
+                type=OpenApiTypes.UUID,
+                required=False,
+                location=OpenApiParameter.QUERY,
+            ),
+            OpenApiParameter(
+                name="user_id",
+                type=OpenApiTypes.UUID,
+                required=False,
+                location=OpenApiParameter.QUERY,
+            ),
+        ]
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)

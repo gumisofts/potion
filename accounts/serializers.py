@@ -292,3 +292,23 @@ class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         exclude = ["groups", "user_permissions", "is_superuser", "is_staff", "password"]
+
+
+class BusinessUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = [
+            "id",
+            "first_name",
+            "last_name",
+            "phone_number",
+            "date_joined",
+        ]
+
+
+# Business Wallets
+# Stats
+# External Bank accounts
+# Popular Subs(amount, count)
+# Receipt Generations
+# Monthly Revenue

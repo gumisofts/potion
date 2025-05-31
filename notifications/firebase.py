@@ -38,10 +38,8 @@ def send_push_notification(fcm_token, title, body, data=None):
             data=data or {},
         )
         response = messaging.send(message)
+        return True  # This will return the message ID of the sent message
         # Check if the token is valid
     except Exception as e:
         print(e)
         return False
-
-    # Send the message
-    return True

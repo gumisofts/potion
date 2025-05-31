@@ -4,6 +4,7 @@ from rest_framework.validators import ValidationError
 
 from accounts.serializers import BusinessSerializer, UserGeneralInfoSerializer
 from enterprises.serializers import EnterpriseSerializer
+from wallets.external_handler import *
 from wallets.models import *
 
 
@@ -67,6 +68,11 @@ class SendMoneyP2PSerializer(Serializer):
         if wallet.balance < amount:
             raise ValidationError({"amount": ["not enough amount in the wallet"]}, 400)
 
+        if wallet == attrs.get("to_wallet"):
+            raise ValidationError(
+                {"to_wallet": ["You cannot send money to the same wallet"]}, 400
+            )
+
         return attrs
 
     def create(self, validated_data):
@@ -101,5 +107,37 @@ class ReceiveMoneyExternalSerializer(Serializer):
     def create(self, validated_data):
         tr = Transaction.objects.create(**validated_data)
         tr.details = "success"
+
+        return tr
+
+
+class SendMoneyExternalSerializer(Serializer):
+    from_wallet = serializers.PrimaryKeyRelatedField(queryset=Wallet.objects.filter())
+    bank = serializers.CharField(write_only=True)
+    account_number = serializers.CharField(write_only=True)
+    amount = serializers.IntegerField(min_value=10)
+    remarks = serializers.CharField()
+
+    def validate(self, attrs):
+        attrs = super().validate(attrs)
+
+        amount = attrs.get("amount")
+
+        wallet = attrs.get("from_wallet")
+
+        if wallet.balance < amount:
+            raise ValidationError({"amount": ["not enough amount in the wallet"]}, 400)
+
+        # Sending money to external bank
+
+        acc = attrs.pop("account_number", None)
+        bank = attrs.pop("bank", None)
+
+        send_money_external(acc, bank, amount, attrs.get("remarks", ""))
+
+        return attrs
+
+    def create(self, validated_data):
+        tr = Transaction.objects.create(**validated_data)
 
         return tr
