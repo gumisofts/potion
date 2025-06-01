@@ -12,5 +12,10 @@ class PhoneAuthenticationBackend(ModelBackend):
 
         user = User.objects.filter(phone_number=phone_number.strip()).first()
 
-        if user and user.check_password(password) and user.is_phone_verified:
+        if (
+            user
+            and user.check_password(password)
+            and user.is_phone_verified
+            and user.is_active
+        ):
             return user
