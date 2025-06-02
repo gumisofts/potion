@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from rest_framework.response import Response
 from rest_framework.serializers import ModelSerializer, Serializer
 from rest_framework.validators import ValidationError
 
@@ -6,7 +7,6 @@ from accounts.serializers import BusinessSerializer, UserGeneralInfoSerializer
 from enterprises.serializers import EnterpriseSerializer
 from wallets.external_handler import *
 from wallets.models import *
-from rest_framework.response import Response
 
 
 class WalletSerializers(ModelSerializer):

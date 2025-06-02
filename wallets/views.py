@@ -1,22 +1,21 @@
-from django.db.models import Q
-from django.shortcuts import render
+import calendar
+from collections import defaultdict
+from datetime import timedelta
+
+from django.db.models import Q, Sum
+from django.db.models.functions import TruncMonth
+from django.shortcuts import get_object_or_404, render
+from django.utils import timezone
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework.mixins import CreateModelMixin, ListModelMixin, RetrieveModelMixin
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
+from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
 
 from wallets.models import Wallet
 from wallets.permissions import *
 from wallets.serializers import *
-from django.utils import timezone
-from datetime import timedelta
-from django.db.models import Sum
-from rest_framework.views import APIView
-from django.db.models.functions import TruncMonth
-from django.shortcuts import get_object_or_404
-from collections import defaultdict
-import calendar
 
 
 class WalletViewsets(RetrieveModelMixin, ListModelMixin, GenericViewSet):
