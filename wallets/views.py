@@ -47,7 +47,7 @@ class WalletViewsetBusiness(RetrieveModelMixin, ListModelMixin, GenericViewSet):
     def get_queryset(self):
         queryset = super().get_queryset()
         # Only show business wallets
-        queryset = queryset.filter(business__in=[self.request.user.businesses])
+        queryset = queryset.filter(business__in=self.request.user.businesses.all())
         user_id = self.request.query_params.get("user_id")
         phone_number = self.request.query_params.get("phone_number")
         if user_id:
