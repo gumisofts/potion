@@ -9,6 +9,14 @@ from rest_framework.viewsets import GenericViewSet
 from wallets.models import Wallet
 from wallets.permissions import *
 from wallets.serializers import *
+from django.utils import timezone
+from datetime import timedelta
+from django.db.models import Sum
+from rest_framework.views import APIView
+from django.db.models.functions import TruncMonth
+from django.shortcuts import get_object_or_404
+from collections import defaultdict
+import calendar
 
 
 class WalletViewsets(RetrieveModelMixin, ListModelMixin, GenericViewSet):
@@ -142,3 +150,76 @@ class ReceiveMoneyExternalViewsets(CreateModelMixin, GenericViewSet):
     )
     def create(self, request, *args, **kwargs):
         return super().create(request, *args, **kwargs)
+
+
+class TransactionStats(APIView):
+    # serializer_class = TransactionStatsSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        user = self.request.user
+        wallet = Wallet.objects.filter(user=user).first()
+        if not wallet:
+            self.permission_denied(self.request, message="Wallet not found")
+        return wallet
+
+    def get(self, request, tr_id, *args, **kwargs):
+        wallet = get_object_or_404(Wallet.objects.all(), id=tr_id)
+        today = timezone.now()
+
+        months_back = [
+            (today.replace(day=1) - timedelta(days=30 * i)).replace(day=1)
+            for i in reversed(range(12))
+        ]
+        transactions = Transaction.objects.filter(
+            created_at__gte=months_back[0],
+        )
+
+        months = []
+        credits = (
+            transactions.filter(to_wallet=wallet)
+            .annotate(month=TruncMonth("created_at"))
+            .values("month")
+            .annotate(total=Sum("amount"))
+            .order_by("month")
+        )
+        debits = (
+            transactions.filter(from_wallet=wallet)
+            .annotate(month=TruncMonth("created_at"))
+            .values("month")
+            .annotate(total=Sum("amount"))
+            .order_by("month")
+        )
+
+        print(months_back)
+
+        month_labels = [calendar.month_abbr[m.month] for m in months_back]
+
+        # Map year-month strings for matching, e.g., '2024-06'
+        month_keys = [m.strftime("%Y-%m") for m in months_back]
+
+        # print(debits)
+
+        # In credit_map = {entry["month"].strftime("%Y-%m"): entry["total"] for entry in credits}
+        credit_map = {
+            entry["month"].strftime("%Y-%m"): entry["total"] for entry in credits
+        }
+        debit_map = {
+            entry["month"].strftime("%Y-%m"): entry["total"] for entry in debits
+        }
+
+        print(debit_map)
+
+        credit_data = [credit_map.get(key, 0) for key in month_keys]
+        debit_data = [debit_map.get(key, 0) for key in month_keys]
+
+        return Response(
+            {
+                "months": month_labels,
+                "data": {
+                    "credits": credit_data,
+                    # "data": credit_data,
+                    "debits": debit_data,
+                },
+            }
+        )

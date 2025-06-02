@@ -1,6 +1,8 @@
 from django.contrib import admin
 
 from .models import *
+from django.utils.safestring import mark_safe
+from django.utils.translation import gettext
 
 
 class UserAdmin(admin.ModelAdmin):
@@ -52,6 +54,14 @@ class CategoryAdmin(admin.ModelAdmin):
     list_display = ["id", "name", "is_active"]
 
 
+@admin.action(description="Verify selected businesses")
+def verify_business(self, request, queryset):
+    for business in queryset:
+        business.is_verified = True
+        business.save()
+    self.message_user(request, "Selected businesses have been verified.")
+
+
 class BusinessAdmin(admin.ModelAdmin):
     list_display = [
         "id",
@@ -61,8 +71,24 @@ class BusinessAdmin(admin.ModelAdmin):
         "is_active",
         "is_verified",
         "owner",
+        "logo_url",
+        "license_url",
     ]
+
+    def logo_url(self, instance):
+
+        if instance.logo:
+            url = instance.logo.public_url
+            return mark_safe(gettext(f'<a href="{url}">{instance.logo.id}</a>'))
+
+    def license_url(self, instance):
+
+        if instance.license:
+            url = instance.license.public_url
+            return mark_safe(gettext(f'<a href="{url}">{instance.license.id}</a>'))
+
     list_filter = ["is_verified"]
+    actions = [verify_business]
 
 
 admin.site.register(User, UserAdmin)

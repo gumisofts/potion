@@ -6,6 +6,7 @@ from accounts.serializers import BusinessSerializer, UserGeneralInfoSerializer
 from enterprises.serializers import EnterpriseSerializer
 from wallets.external_handler import *
 from wallets.models import *
+from rest_framework.response import Response
 
 
 class WalletSerializers(ModelSerializer):
@@ -146,3 +147,11 @@ class SendMoneyExternalSerializer(Serializer):
         tr = Transaction.objects.create(**validated_data)
 
         return tr
+
+
+# class TransactionStatsSerializer()
+# Dashboard apis
+class TransactionStatsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Transaction
+        fields = ["id", "amount", "created_at", "updated_at"]

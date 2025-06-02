@@ -15,4 +15,6 @@ router.register(
     "receive/external", ReceiveMoneyExternalViewsets, basename="receive-money-external"
 )
 
-urlpatterns = router.urls + []
+urlpatterns = router.urls + [
+    path("stats/transactions/<tr_id>", TransactionStats.as_view(), name="")
+]
