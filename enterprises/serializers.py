@@ -1,9 +1,12 @@
 import secrets
 from uuid import uuid4
 
+from django.utils import timezone
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 from rest_framework.validators import ValidationError
+
+from wallets.models import Transaction, Wallet
 
 from .models import *
 
@@ -35,6 +38,7 @@ class UserGrantSerializer(ModelSerializer):
             )
 
         attrs["user"] = user
+        attrs["is_active"] = True
 
         return attrs
 
@@ -66,3 +70,48 @@ class AccessGrantSerializer(ModelSerializer):
         instance.access_secret = validated_data.pop("access_secret")
 
         return instance
+
+
+class PullWalletMoneySerializer(serializers.Serializer):
+    enterprise = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    amount = serializers.IntegerField(min_value=1)
+    remarks = serializers.CharField(required=False, allow_blank=True)
+    user_grant = serializers.PrimaryKeyRelatedField(
+        queryset=UserGrant.objects.filter(is_active=True, enterprise__isnull=False)
+    )
+
+    def validate(self, attrs):
+        attrs = super().validate(attrs)
+
+        amount = attrs.get("amount")
+        enterprise = attrs.get("enterprise")
+        user_grant = attrs.get("user_grant")
+        if not user_grant.enterprise == enterprise:
+            raise ValidationError(
+                {"user_grant": "User grant does not belong to this enterprise"}
+            )
+        if enterprise.is_active is False:
+            raise ValidationError({"enterprise": "Enterprise is not active"})
+        if user_grant.grant_status != "approved":
+            raise ValidationError(
+                {"user_grant": "User grant is not approved or is suspended"}
+            )
+        if user_grant.max_amount < amount:
+            raise ValidationError(
+                {"amount": "Amount exceeds the maximum allowed for this user grant"}
+            )
+        if user_grant.expires_at and user_grant.expires_at < timezone.now():
+            raise ValidationError({"user_grant": "User grant has expired"})
+        if not user_grant.is_active:
+            raise ValidationError({"user_grant": "User grant is not active"})
+
+        return attrs
+
+    def create(self, validated_data):
+        tr = Transaction.objects.create(
+            to_wallet=validated_data["enterprise"].wallet,
+            from_wallet=validated_data["user_grant"].user.wallet,
+            amount=validated_data["amount"],
+            remarks=validated_data.get("remarks", ""),
+        )
+        return validated_data

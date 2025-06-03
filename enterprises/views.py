@@ -140,3 +140,12 @@ class UserGrantViewset(ListModelMixin, UpdateModelMixin, GenericViewSet):
 class AccessGrantViewset(CreateModelMixin, GenericViewSet):
     serializer_class = AccessGrantSerializer
     permission_classes = [IsEnterprise]
+
+
+class PullWalletMoneyViewset(CreateModelMixin, GenericViewSet):
+    """
+    API endpoint that allows enterprises to pull money from user wallets.
+    """
+
+    serializer_class = PullWalletMoneySerializer
+    permission_classes = [IsEnterprise]
