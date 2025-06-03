@@ -14,6 +14,7 @@ from rest_framework.mixins import (
     ListModelMixin,
     RetrieveModelMixin,
     UpdateModelMixin,
+    DestroyModelMixin,
 )
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -184,7 +185,11 @@ class BusinessServiceViewset(
 
 
 class UserDeviceViewset(
-    CreateModelMixin, RetrieveModelMixin, ListModelMixin, GenericViewSet
+    CreateModelMixin,
+    RetrieveModelMixin,
+    ListModelMixin,
+    DestroyModelMixin,
+    GenericViewSet,
 ):
     serializer_class = UserDeviceSerializer
     permission_classes = [IsAuthenticated]
