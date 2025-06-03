@@ -2,6 +2,7 @@ import os
 from datetime import timedelta
 from pathlib import Path
 
+from corsheaders.defaults import default_headers
 from django.core.management.utils import get_random_secret_key
 from dotenv import load_dotenv
 
@@ -20,6 +21,8 @@ ALLOWED_HOSTS = env("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
 
 CORS_ALLOWED_ORIGINS = env("CORS_ALLOWED_ORIGINS", "http://localhost:3000").split(",")
 CORS_ALLOW_CREDENTIALS = True
+
+CORS_ALLOW_HEADERS = list(default_headers) + ["x-access-id", "x-access-secret"]
 
 AUTH_USER_MODEL = "accounts.User"
 INSTALLED_APPS = [

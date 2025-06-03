@@ -70,3 +70,16 @@ class SubscriptionSerializer(ModelSerializer):
         instance = super().update(instance, validated_data)
         instance.features.set(features)
         return instance
+
+
+class PopularSubscriptionSerializer(serializers.ModelSerializer):
+    features = FeaturesSerializer(many=True)
+
+    class Meta:
+        model = Subscription
+        fields = ["id", "name", "features", "fixed_price", "payment_type"]
+
+    # def to_representation(self, instance):
+    #     data = super().to_representation(instance)
+    #     data["features"] = [feature["name"] for feature in data["features"]]
+    #     return data

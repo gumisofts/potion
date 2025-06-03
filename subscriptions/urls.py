@@ -14,5 +14,9 @@ router.register(
 )
 router.register("subscriptions", SubscriptionViewset, basename="subscriptions")
 
-
+router.register(
+    r"popular_subscriptions",
+    PopularSubscriptionViewset,
+    basename="popular-subscriptions",
+)
 urlpatterns = [] + router.urls

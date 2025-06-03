@@ -1,3 +1,4 @@
+from django.db.models import Count
 from django.shortcuts import render
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema
@@ -206,3 +207,67 @@ class UserSubscriptionViewset(ListModelMixin, GenericViewSet):
             queryset = queryset.filter(subscription__service_type=service_type)
 
         return queryset
+
+
+class PopularSubscriptionViewset(ListModelMixin, GenericViewSet):
+    serializer_class = PopularSubscriptionSerializer
+    queryset = Subscription.objects.filter(is_active=True)
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="service_id",
+                required=False,
+                location=OpenApiParameter.QUERY,
+                type=OpenApiTypes.UUID,
+            ),
+            OpenApiParameter(
+                name="business_id",
+                required=False,
+                location=OpenApiParameter.QUERY,
+                type=OpenApiTypes.UUID,
+            ),
+            OpenApiParameter(
+                name="service_type",
+                required=False,
+                location=OpenApiParameter.QUERY,
+                type=OpenApiTypes.STR,
+            ),
+        ]
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+
+        service_id = self.request.query_params.get("service_id")
+        business_id = self.request.query_params.get("business_id")
+        service_type = self.request.query_params.get("service_type")
+
+        if service_id:
+            queryset = queryset.filter(service=service_id)
+
+        if business_id:
+            queryset = queryset.filter(service__business=business_id)
+
+        if service_type:
+            queryset = queryset.filter(service_type=service_type)
+        # Optionally, you can add ordering or other filters here
+        #
+        popular_subscriptions = (
+            UserSubscription.objects.filter(
+                is_active=True
+            )  # optional: only active subscriptions
+            .values("subscription__id")
+            .annotate(user_count=Count("user"))
+            .order_by("-user_count")
+        )
+        print(popular_subscriptions)
+        if popular_subscriptions:
+            popular_subscription_ids = [
+                sub["subscription__id"] for sub in popular_subscriptions
+            ]
+            queryset = queryset.filter(id__in=popular_subscription_ids)
+
+        return queryset[:10]  # Limit to top 10 popular subscriptions
