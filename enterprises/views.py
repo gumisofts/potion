@@ -1,6 +1,11 @@
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
-from rest_framework.mixins import CreateModelMixin, ListModelMixin, UpdateModelMixin
+from rest_framework.mixins import (
+    CreateModelMixin,
+    ListModelMixin,
+    RetrieveModelMixin,
+    UpdateModelMixin,
+)
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
 
@@ -33,7 +38,9 @@ from .serializers import *
         ]
     )
 )
-class EnterpriseUserGrantViewset(CreateModelMixin, ListModelMixin, GenericViewSet):
+class EnterpriseUserGrantViewset(
+    CreateModelMixin, ListModelMixin, RetrieveModelMixin, GenericViewSet
+):
     """
     API endpoint that allows user grants to be viewed or edited.
     """

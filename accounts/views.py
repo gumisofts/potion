@@ -11,10 +11,10 @@ from drf_spectacular.utils import (
 from rest_framework import status
 from rest_framework.mixins import (
     CreateModelMixin,
+    DestroyModelMixin,
     ListModelMixin,
     RetrieveModelMixin,
     UpdateModelMixin,
-    DestroyModelMixin,
 )
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
