@@ -155,3 +155,9 @@ class TransactionStatsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Transaction
         fields = ["id", "amount", "created_at", "updated_at"]
+
+
+class WalletDailySnapshotSerializer(ModelSerializer):
+    class Meta:
+        model = WalletDailySnapshot
+        fields = ["id", "wallet", "balance", "created_at", "updated_at"]

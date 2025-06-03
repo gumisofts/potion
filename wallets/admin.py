@@ -26,6 +26,13 @@ class AccessKeyAdmin(admin.ModelAdmin):
     list_filter = ("created_at",)
 
 
+class WalletDailySnapshotAdmin(admin.ModelAdmin):
+    list_display = ("id", "wallet", "balance", "created_at")
+    ordering = ("-created_at",)
+    search_fields = ("wallet__user__phone_number",)
+
+
 admin.site.register(Wallet, WalletAdmin)
 admin.site.register(Transaction, TransactionAdmin)
+admin.site.register(WalletDailySnapshot, WalletDailySnapshotAdmin)
 admin.site.register(AccessKey, AccessKeyAdmin)

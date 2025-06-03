@@ -14,7 +14,7 @@ router.register("send/external", SendMoneyExternalViewsets, basename="send-exter
 router.register(
     "receive/external", ReceiveMoneyExternalViewsets, basename="receive-money-external"
 )
-
+router.register("snapshots", WalletDailySnapshotViewset, basename="wallet-snapshots")
 urlpatterns = router.urls + [
     path("stats/transactions/<tr_id>", TransactionStats.as_view(), name="")
 ]

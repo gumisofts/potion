@@ -225,3 +225,32 @@ class TransactionStats(APIView):
 
 
 #
+
+
+class WalletDailySnapshotViewset(ListModelMixin, GenericViewSet):
+    serializer_class = WalletDailySnapshotSerializer
+    permission_classes = [IsAuthenticated]
+    queryset = WalletDailySnapshot.objects.all()
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        wallet_id = self.request.query_params.get("wallet_id")
+        created_at_gte = self.request.query_params.get("created_at_gte")
+
+        if created_at_gte:
+            queryset = queryset.filter(created_at__date__gte=created_at_gte)
+
+        if wallet_id:
+            queryset = queryset.filter(wallet__id=wallet_id)
+        return queryset
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(name="wallet_id", required=False, type=OpenApiTypes.UUID),
+            OpenApiParameter(
+                name="created_at_gte", required=False, type=OpenApiTypes.DATE
+            ),
+        ]
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)

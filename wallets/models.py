@@ -90,3 +90,15 @@ class AccessKey(BaseModel):
 
         self.access_secret = make_password(self.access_secret)
         super().save(*args, **kwargs)
+
+
+class WalletDailySnapshot(BaseModel):
+    wallet = models.ForeignKey(
+        Wallet, on_delete=models.CASCADE, related_name="daily_snapshots"
+    )
+    balance = models.BigIntegerField(
+        validators=[MinValueValidator(0, message="Balance cannot be negative.")]
+    )
+
+    def __str__(self):
+        return f"Snapshot of {self.wallet} at {self.created_at}"

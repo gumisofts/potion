@@ -21,6 +21,10 @@
             {
                 "function": "tasks_handler.tasks.subscriptions_payment",
                 "expression": "rate(1 day)"
+            },
+            {
+                "function": "tasks_handler.tasks.create_snapshots_wallet",
+                "expression": "rate(1 minute)"
             }
         ],
         "extra_permissions": [

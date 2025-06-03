@@ -5,7 +5,7 @@ from django.db import transaction
 from django.utils import timezone
 
 from subscriptions.models import Subscription, UserSubscription
-from wallets.models import Transaction
+from wallets.models import Transaction, Wallet, WalletDailySnapshot
 
 
 @shared_task
@@ -74,9 +74,10 @@ def one_subscription_payment(user_subscription):
         user_subscription.save()
 
 
-def test_crons():
-    print("test crons")
-    # subscriptions_payment()
-    # dispatch_subscription_payment()
-    # handle_one_subscription()
-    # one_subscription_payment()
+def create_snapshots_wallet():
+    wallets = Wallet.objects.all()
+    for wallet in wallets:
+        WalletDailySnapshot.objects.create(
+            wallet=wallet,
+            balance=wallet.balance,
+        )
